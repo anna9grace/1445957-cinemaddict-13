@@ -1,7 +1,7 @@
 # Проект «Киноман» [![Build status][travis-image]][travis-url]
 
 * Студент: [Анна Родионова](https://up.htmlacademy.ru/ecmascript/13/user/1445957).
-* Наставник: `Неизвестно`.
+* Наставник: `Иван Шалагин`.
 
 ---
 
