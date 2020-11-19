@@ -13,28 +13,28 @@ const renderHtml = (element, position, template) => {
   element.insertAdjacentHTML(position, template);
 };
 
-const pageHeader = document.querySelector(`.header`);
-const pageMain = document.querySelector(`.main`);
-const footerStats = document.querySelector(`.footer__statistics`);
+const pageHeaderElement = document.querySelector(`.header`);
+const pageMainElement = document.querySelector(`.main`);
+const statsElement = document.querySelector(`.footer__statistics`);
 
-renderHtml(pageHeader, `beforeend`, createUserProfileTemplate());
-renderHtml(pageMain, `beforeend`, createMenuTemplate());
-renderHtml(pageMain, `beforeend`, createFilmsListTemplate());
-renderHtml(footerStats, `beforeend`, createStatisticsTemplate());
+renderHtml(pageHeaderElement, `beforeend`, createUserProfileTemplate());
+renderHtml(pageMainElement, `beforeend`, createMenuTemplate());
+renderHtml(pageMainElement, `beforeend`, createFilmsListTemplate());
+renderHtml(statsElement, `beforeend`, createStatisticsTemplate());
 
-const films = pageMain.querySelector(`.films-list`);
+const filmsElement = pageMainElement.querySelector(`.films-list`);
 
-renderHtml(films, `afterend`, createTopFilmsTemplate());
-renderHtml(films, `beforeend`, createShowMoreTemplate());
+renderHtml(filmsElement, `afterend`, createTopFilmsTemplate());
+renderHtml(filmsElement, `beforeend`, createShowMoreTemplate());
 
-const filmsList = films.querySelector(`.films-list__container`);
-const topFilmsLists = pageMain.querySelectorAll(`.films-list--extra .films-list__container`);
+const filmsListElement = filmsElement.querySelector(`.films-list__container`);
+const topFilmsElement = pageMainElement.querySelectorAll(`.films-list--extra .films-list__container`);
 
 for (let i = 0; i < FILMS_COUNT; i++) {
-  renderHtml(filmsList, `beforeend`, createFilmCardTemplate());
+  renderHtml(filmsListElement, `beforeend`, createFilmCardTemplate());
 }
 
-for (let list of topFilmsLists) {
+for (let list of topFilmsElement) {
   for (let i = 0; i < TOP_FILMS_COUNT; i++) {
     renderHtml(list, `beforeend`, createFilmCardTemplate());
   }
