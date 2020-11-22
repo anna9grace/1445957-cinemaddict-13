@@ -5,9 +5,13 @@ import {createTopFilmsTemplate} from "./view/top-films.js";
 import {createShowMoreTemplate} from "./view/show-more.js";
 import {createFilmCardTemplate} from "./view/film-card.js";
 import {createStatisticsTemplate} from "./view/stats.js";
+import {generateFilm} from "./mock/film.js";
 
 const FILMS_COUNT = 5;
 const TOP_FILMS_COUNT = 2;
+
+const films = new Array(FILMS_COUNT).fill().map(generateFilm);
+console.log(films);
 
 const renderHtml = (element, position, template) => {
   element.insertAdjacentHTML(position, template);
