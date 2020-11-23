@@ -33,13 +33,13 @@ const generateName = () => {
 
 const generatePoster = () => {
   const posters = [
-    `./public/images/posters/made-for-each-other.jpeg`,
-    `./public/images/posters/popeye-meets-sinbad.jpeg`,
-    `./public/images/posters/sagebrush-trail.jpeg`,
-    `./public/images/posters/santa-claus-conquers-the-martians.jpeg`,
-    `./public/images/posters/the-dance-of-life.jpeg`,
-    `./public/images/posters/the-great-flamarion.jpeg`,
-    `./public/images/posters/the-man-with-the-golden-arm.jpeg`,
+    `./images/posters/made-for-each-other.png`,
+    `./images/posters/popeye-meets-sinbad.png`,
+    `./images/posters/sagebrush-trail.jpg`,
+    `./images/posters/santa-claus-conquers-the-martians.jpg`,
+    `./images/posters/the-dance-of-life.jpg`,
+    `./images/posters/the-great-flamarion.jpg`,
+    `./images/posters/the-man-with-the-golden-arm.jpg`,
   ];
   return getRandomArrayElement(posters);
 };
@@ -111,7 +111,7 @@ const generateDescription = () => {
 const generateComments = () => {
   const emojies = [`smile`, `sleeping`, `puke`, `angry`];
   const authors = [`John Doe`, `Tim Macoveev`, `Joe Black`, `John Smith`];
-  const commentsNumber = getRandomInteger(0, 4);
+  const commentsNumber = getRandomInteger(0, 5);
   if (commentsNumber === 0) {
     return null;
   }
@@ -135,7 +135,7 @@ export const generateFilm = () => {
     writers: generateWriters(),
     actors: generateActors(),
     releaseDate: dayjs().subtract(getRandomInteger(10000, 30000), `day`).toDate(),
-    duration: dayjs.duration(getRandomInteger(90, 180), `minutes`).minutes(),
+    duration: dayjs.duration(getRandomInteger(30, 180), `minutes`),
     country: generateCountry(),
     genres: generateGenres(),
     description: generateDescription(),

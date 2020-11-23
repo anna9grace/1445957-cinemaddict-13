@@ -9,8 +9,9 @@ import {generateFilm} from "./mock/film.js";
 
 const FILMS_COUNT = 5;
 const TOP_FILMS_COUNT = 2;
+const MOCK_FILMS_COUNT = 20;
 
-const films = new Array(FILMS_COUNT).fill().map(generateFilm);
+const films = new Array(MOCK_FILMS_COUNT).fill().map(generateFilm);
 console.log(films);
 
 const renderHtml = (element, position, template) => {
@@ -35,12 +36,12 @@ const filmsListElement = filmsElement.querySelector(`.films-list__container`);
 const topFilmsElement = pageMainElement.querySelectorAll(`.films-list--extra .films-list__container`);
 
 for (let i = 0; i < FILMS_COUNT; i++) {
-  renderHtml(filmsListElement, `beforeend`, createFilmCardTemplate());
+  renderHtml(filmsListElement, `beforeend`, createFilmCardTemplate(films[i]));
 }
 
 for (let list of topFilmsElement) {
   for (let i = 0; i < TOP_FILMS_COUNT; i++) {
-    renderHtml(list, `beforeend`, createFilmCardTemplate());
+    renderHtml(list, `beforeend`, createFilmCardTemplate(films[i]));
   }
 }
 
