@@ -1,4 +1,5 @@
-import dayjs from "dayjs";
+import {humanizeFilmDuration} from "../util.js";
+import {humanizeDate} from "../util.js";
 
 const MAX_DESCRIPTION_LENGTH = 140;
 
@@ -15,15 +16,13 @@ export const createFilmCardTemplate = (film) => {
   const shortDescription = (description.length > MAX_DESCRIPTION_LENGTH)
     ? description.substr(0, MAX_DESCRIPTION_LENGTH - 2) + `...`
     : description;
-  const date = dayjs(releaseDate).format(`YYYY`);
-  const durationInHours = duration.get(`hours`) !== 0 ? duration.get(`hours`) + `h ` : ``;
 
   return `<article class="film-card">
     <h3 class="film-card__title">${name}</h3>
     <p class="film-card__rating">${rating}</p>
     <p class="film-card__info">
-      <span class="film-card__year">${date}</span>
-      <span class="film-card__duration">${durationInHours}${duration.get(`minutes`)}m</span>
+      <span class="film-card__year">${humanizeDate(releaseDate, `YYYY`)}</span>
+      <span class="film-card__duration">${humanizeFilmDuration(duration)}</span>
       <span class="film-card__genre">${genres.join(`, `)}</span>
     </p>
     <img src="${poster}" alt="${name}" class="film-card__poster">

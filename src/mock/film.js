@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
-import {getRandomInteger} from "./util.js";
-import {getRandomArrayElement} from "./util.js";
+import {getRandomInteger} from "../util.js";
+import {getRandomArrayElement} from "../util.js";
 dayjs.extend(duration);
 
 const randomText = [
