@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 
 const MAX_DESCRIPTION_LENGTH = 140;
 
-const getControlsState = (controlsState) => {
+const renderControlsState = (controlsState) => {
   return (controlsState) ? `film-card__controls-item--active` : ``;
 };
 
@@ -13,7 +13,7 @@ export const createFilmCardTemplate = (film) => {
 
   const commentsNumber = (comments === null) ? 0 : comments.length;
   const shortDescription = (description.length > MAX_DESCRIPTION_LENGTH)
-    ? description.substr(0, MAX_DESCRIPTION_LENGTH - 1) + `...`
+    ? description.substr(0, MAX_DESCRIPTION_LENGTH - 2) + `...`
     : description;
   const date = dayjs(releaseDate).format(`YYYY`);
   const durationInHours = duration.get(`hours`) !== 0 ? duration.get(`hours`) + `h ` : ``;
@@ -30,9 +30,9 @@ export const createFilmCardTemplate = (film) => {
     <p class="film-card__description">${shortDescription}</p>
     <a class="film-card__comments">${commentsNumber} comments</a>
     <div class="film-card__controls">
-      <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${getControlsState(isInWatchlist)}" type="button">Add to watchlist</button>
-      <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${getControlsState(isWatched)}" type="button">Mark as watched</button>
-      <button class="film-card__controls-item button film-card__controls-item--favorite ${getControlsState(isFavorite)}" type="button">Mark as favorite</button>
+      <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${renderControlsState(isInWatchlist)}" type="button">Add to watchlist</button>
+      <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${renderControlsState(isWatched)}" type="button">Mark as watched</button>
+      <button class="film-card__controls-item button film-card__controls-item--favorite ${renderControlsState(isFavorite)}" type="button">Mark as favorite</button>
     </div>
   </article>`;
 };
