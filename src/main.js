@@ -9,14 +9,15 @@ import {createStatisticsTemplate} from "./view/stats.js";
 // import {createPopupTemplate} from "./view/popup.js";
 import {generateFilm} from "./mock/film.js";
 import {generateFilters} from "./mock/filters.js";
+import {getWatchedFilms} from "./util.js";
 
 const FILMS_COUNT = 5;
 const TOP_FILMS_COUNT = 2;
-const MOCK_FILMS_COUNT = 20;
+const MOCK_FILMS_COUNT = 18;
 
 const films = new Array(MOCK_FILMS_COUNT).fill().map(generateFilm);
 const filters = generateFilters(films);
-// console.log(filters);
+const watchedFilmsCount = getWatchedFilms(films);
 
 const renderHtml = (element, position, template) => {
   element.insertAdjacentHTML(position, template);
@@ -27,7 +28,7 @@ const pageMainElement = document.querySelector(`.main`);
 const statsElement = document.querySelector(`.footer__statistics`);
 // const footerElement = document.querySelector(`.footer`);
 
-renderHtml(pageHeaderElement, `beforeend`, createUserProfileTemplate(films));
+renderHtml(pageHeaderElement, `beforeend`, createUserProfileTemplate(watchedFilmsCount));
 renderHtml(pageMainElement, `beforeend`, createFiltersTemplate(filters));
 renderHtml(pageMainElement, `beforeend`, createSortTemplate());
 renderHtml(pageMainElement, `beforeend`, createFilmsListTemplate());
@@ -35,14 +36,12 @@ renderHtml(statsElement, `beforeend`, createStatisticsTemplate());
 // renderHtml(footerElement, `afterend`, createPopupTemplate(films[0]));
 
 const filmsElement = pageMainElement.querySelector(`.films-list`);
-
 renderHtml(filmsElement, `afterend`, createTopFilmsTemplate());
-renderHtml(filmsElement, `beforeend`, createShowMoreTemplate());
 
 const filmsListElement = filmsElement.querySelector(`.films-list__container`);
 const topFilmsElement = pageMainElement.querySelectorAll(`.films-list--extra .films-list__container`);
 
-for (let i = 0; i < FILMS_COUNT; i++) {
+for (let i = 0; i < Math.min(FILMS_COUNT, films.length); i++) {
   renderHtml(filmsListElement, `beforeend`, createFilmCardTemplate(films[i]));
 }
 
@@ -52,3 +51,24 @@ for (let list of topFilmsElement) {
   }
 }
 
+
+if (films.length > FILMS_COUNT) {
+  let shownFilmsCount = FILMS_COUNT;
+
+  renderHtml(filmsElement, `beforeend`, createShowMoreTemplate());
+  const showMoreButton = filmsElement.querySelector(`.films-list__show-more`);
+
+  showMoreButton.addEventListener(`click`, (evt) => {
+    evt.preventDefault();
+
+    films
+      .slice(shownFilmsCount, shownFilmsCount + FILMS_COUNT)
+      .forEach((film) => renderHtml(filmsListElement, `beforeend`, createFilmCardTemplate(film)));
+
+    shownFilmsCount += FILMS_COUNT;
+
+    if (films.length <= shownFilmsCount) {
+      showMoreButton.remove();
+    }
+  });
+}

@@ -20,3 +20,7 @@ export const humanizeFilmDuration = (duration) => {
 export const humanizeDate = (date, format) => {
   return dayjs(date).format(format);
 };
+
+export const getWatchedFilms = (films) => {
+  return films.filter((film) => film.isWatched).length;
+};

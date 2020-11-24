@@ -1,6 +1,8 @@
+import {getWatchedFilms} from "../util.js";
+
 const filmsFilterMap = {
   Watchlist: (films) => films.filter((film) => film.isInWatchlist).length,
-  History: (films) => films.filter((film) => film.isWatched).length,
+  History: (films) => getWatchedFilms(films),
   Favorites: (films) => films.filter((film) => film.isFavorite).length,
 };
 
