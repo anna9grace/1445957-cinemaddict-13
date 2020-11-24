@@ -16,6 +16,7 @@ const MOCK_FILMS_COUNT = 20;
 
 const films = new Array(MOCK_FILMS_COUNT).fill().map(generateFilm);
 const filters = generateFilters(films);
+// console.log(filters);
 
 const renderHtml = (element, position, template) => {
   element.insertAdjacentHTML(position, template);
@@ -26,7 +27,7 @@ const pageMainElement = document.querySelector(`.main`);
 const statsElement = document.querySelector(`.footer__statistics`);
 // const footerElement = document.querySelector(`.footer`);
 
-renderHtml(pageHeaderElement, `beforeend`, createUserProfileTemplate());
+renderHtml(pageHeaderElement, `beforeend`, createUserProfileTemplate(films));
 renderHtml(pageMainElement, `beforeend`, createFiltersTemplate(filters));
 renderHtml(pageMainElement, `beforeend`, createSortTemplate());
 renderHtml(pageMainElement, `beforeend`, createFilmsListTemplate());
