@@ -12,7 +12,7 @@ export const createFilmCardTemplate = (film) => {
   const {name, poster, rating, releaseDate, duration, genres, description, comments, isInWatchlist, isWatched,
     isFavorite} = film;
 
-  const commentsNumber = (comments === null) ? 0 : comments.length;
+  const commentsCount = (comments === null) ? 0 : comments.length;
   const shortDescription = (description.length > MAX_DESCRIPTION_LENGTH)
     ? description.substr(0, MAX_DESCRIPTION_LENGTH - 2) + `...`
     : description;
@@ -27,7 +27,7 @@ export const createFilmCardTemplate = (film) => {
     </p>
     <img src="${poster}" alt="${name}" class="film-card__poster">
     <p class="film-card__description">${shortDescription}</p>
-    <a class="film-card__comments">${commentsNumber} comments</a>
+    <a class="film-card__comments">${commentsCount} comments</a>
     <div class="film-card__controls">
       <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${renderControlsState(isInWatchlist)}" type="button">Add to watchlist</button>
       <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${renderControlsState(isWatched)}" type="button">Mark as watched</button>

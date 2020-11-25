@@ -13,7 +13,7 @@ import {getWatchedFilms} from "./util.js";
 
 const FILMS_COUNT = 5;
 const TOP_FILMS_COUNT = 2;
-const MOCK_FILMS_COUNT = 18;
+const MOCK_FILMS_COUNT = 22;
 
 const films = new Array(MOCK_FILMS_COUNT).fill().map(generateFilm);
 const filters = generateFilters(films);
