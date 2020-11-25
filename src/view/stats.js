@@ -1,3 +1,5 @@
+import {getRandomInteger} from "../util.js";
+
 export const createStatisticsTemplate = () => {
-  return `<p>130 291 movies inside</p>`;
+  return `<p>${getRandomInteger(10000, 1000000)} movies inside</p>`;
 };
