@@ -8,7 +8,7 @@ import FilmsWrapperView from "./view/films-wrapper.js";
 import FilmCardView from "./view/film-card.js";
 import LoadMoreButtonView from "./view/show-more.js";
 import FooterStatsView from "./view/stats.js";
-// import FilmPopupView from "./view/popup.js";
+import FilmPopupView from "./view/popup.js";
 import {generateFilm} from "./mock/film.js";
 import {generateFilters} from "./mock/filters.js";
 import {getWatchedFilms, RenderPosition, render} from "./util.js";
@@ -25,12 +25,46 @@ const watchedFilmsCount = getWatchedFilms(films);
 const pageHeaderElement = document.querySelector(`.header`);
 const pageMainElement = document.querySelector(`.main`);
 const statsElement = document.querySelector(`.footer__statistics`);
-// const footerElement = document.querySelector(`.footer`);
+const footerElement = document.querySelector(`.footer`);
 
 
 const renderFilm = (filmsList, film) => {
   const filmCardComponent = new FilmCardView(film);
+  const openPopupElements = filmCardComponent.getElement().querySelectorAll(`.film-card__poster, .film-card__title, .film-card__comments`);
+
+  for (let element of openPopupElements) {
+    element.addEventListener(`click`, (evt) => {
+      evt.preventDefault();
+      renderPopup(footerElement, film);
+    });
+  }
   render(filmsList, RenderPosition.BEFOREEND, filmCardComponent.getElement());
+};
+
+
+const renderPopup = (container, film) => {
+  const filmPopupComponent = new FilmPopupView(film);
+  const closePopupElement = filmPopupComponent.getElement().querySelector(`.film-details__close-btn`);
+
+  const closePopup = () => {
+    filmPopupComponent.getElement().remove();
+    filmPopupComponent.removeElement();
+  };
+
+  const onEscKeyDown = (evt) => {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      evt.preventDefault();
+      closePopup();
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
+
+  document.addEventListener(`keydown`, onEscKeyDown);
+  closePopupElement.addEventListener(`click`, (evt) => {
+    evt.preventDefault();
+    closePopup();
+  });
+  render(container, RenderPosition.AFTEREND, filmPopupComponent.getElement());
 };
 
 
@@ -85,8 +119,5 @@ const renderFilmsBlock = (filmsContainer, filmsEl) => {
 render(pageHeaderElement, RenderPosition.BEFOREEND, new UserProfileView(watchedFilmsCount).getElement());
 renderFilmsBlock(pageMainElement, films);
 render(statsElement, RenderPosition.BEFOREEND, new FooterStatsView().getElement());
-
-
-// renderHtml(footerElement, `afterend`, createPopupTemplate(films[0]));
 
 

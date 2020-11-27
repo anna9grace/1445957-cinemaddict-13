@@ -1,8 +1,7 @@
 import {createElement} from "../util.js";
 
 const createFilmsWrapperTemplate = () => {
-  return `<div class="films-list__container">
-    </div>`;
+  return `<div class="films-list__container"></div>`;
 };
 
 export default class FilmsWrapper {

@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 export const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
   BEFOREEND: `beforeend`,
+  AFTEREND: `afterend`,
 };
 
 export const render = (container, place, element) => {
@@ -13,13 +14,11 @@ export const render = (container, place, element) => {
     case RenderPosition.BEFOREEND:
       container.append(element);
       break;
+    case RenderPosition.AFTEREND:
+      container.after(element);
+      break;
   }
 };
-
-
-// export const render = (element, position, template) => {
-//   element.insertAdjacentHTML(position, template);
-// };
 
 export const createElement = (template) => {
   const newElement = document.createElement(`div`);
