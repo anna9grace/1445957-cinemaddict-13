@@ -6,7 +6,6 @@ const renderControlsState = (controlsState) => {
   return (controlsState) ? `film-card__controls-item--active` : ``;
 };
 
-
 const createFilmCardTemplate = (film) => {
   const {name, poster, rating, releaseDate, duration, genres, description, comments, isInWatchlist, isWatched,
     isFavorite} = film;
@@ -34,7 +33,6 @@ const createFilmCardTemplate = (film) => {
     </div>
   </article>`;
 };
-
 
 export default class Film {
   constructor(film) {
