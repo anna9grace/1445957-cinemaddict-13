@@ -1,5 +1,4 @@
-import {humanizeFilmDuration} from "../util.js";
-import {humanizeDate} from "../util.js";
+import {humanizeFilmDuration, humanizeDate, createElement} from "../util.js";
 
 const MAX_DESCRIPTION_LENGTH = 140;
 
@@ -7,8 +6,7 @@ const renderControlsState = (controlsState) => {
   return (controlsState) ? `film-card__controls-item--active` : ``;
 };
 
-
-export const createFilmCardTemplate = (film) => {
+const createFilmCardTemplate = (film) => {
   const {name, poster, rating, releaseDate, duration, genres, description, comments, isInWatchlist, isWatched,
     isFavorite} = film;
 
@@ -35,3 +33,25 @@ export const createFilmCardTemplate = (film) => {
     </div>
   </article>`;
 };
+
+export default class Film {
+  constructor(film) {
+    this._film = film;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmCardTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

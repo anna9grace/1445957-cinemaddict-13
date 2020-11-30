@@ -1,5 +1,4 @@
-import {humanizeFilmDuration} from "../util.js";
-import {humanizeDate} from "../util.js";
+import {humanizeFilmDuration, humanizeDate, createElement} from "../util.js";
 
 const renderControlsState = (controlsState) => {
   return (controlsState) ? `checked` : ``;
@@ -43,7 +42,7 @@ const createPopupCommentsTemplate = (comments) => {
     </ul>`;
 };
 
-export const createPopupTemplate = (film) => {
+const createPopupTemplate = (film) => {
   const {name, originalName, poster, rating, director, writers, actors, releaseDate, duration, country, genres, description, comments, isInWatchlist, isWatched, isFavorite, ageRating} = film;
 
   return `<section class="film-details">
@@ -158,3 +157,25 @@ export const createPopupTemplate = (film) => {
     </form>
   </section>`;
 };
+
+export default class FilmPopup {
+  constructor(film) {
+    this._film = film;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createPopupTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
