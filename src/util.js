@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 
 export const RenderPosition = {
+  BEFOREBEGIN: `beforebegin`,
   AFTERBEGIN: `afterbegin`,
   BEFOREEND: `beforeend`,
   AFTEREND: `afterend`,
@@ -8,6 +9,9 @@ export const RenderPosition = {
 
 export const render = (container, place, element) => {
   switch (place) {
+    case RenderPosition.BEFOREBEGIN:
+      container.before(element);
+      break;
     case RenderPosition.AFTERBEGIN:
       container.prepend(element);
       break;
@@ -49,4 +53,8 @@ export const humanizeDate = (date, format) => {
 
 export const getWatchedFilms = (films) => {
   return films.filter((film) => film.isWatched).length;
+};
+
+export const getContainer = (element) => {
+  return element.getElement().querySelector(`.films-list__container`);
 };
