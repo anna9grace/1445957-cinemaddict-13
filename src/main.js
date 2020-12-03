@@ -12,7 +12,8 @@ import FooterStatsView from "./view/stats.js";
 import FilmPopupView from "./view/popup.js";
 import {generateFilm} from "./mock/film.js";
 import {generateFilters} from "./mock/filters.js";
-import {getWatchedFilms, RenderPosition, render, getContainer} from "./util.js";
+import {getWatchedFilms} from "./utils/util.js";
+import {RenderPosition, render, removeElement, getContainer} from "./utils/render.js";
 
 const FILMS_COUNT = 5;
 const TOP_FILMS_COUNT = 2;
@@ -40,7 +41,7 @@ const renderFilm = (filmsList, film) => {
   filmCardComponent.setClickHandler(() => {
     renderPopup(footerElement, film);
   });
-  render(filmsList, RenderPosition.BEFOREEND, filmCardComponent.getElement());
+  render(filmsList, RenderPosition.BEFOREEND, filmCardComponent);
 };
 
 
@@ -48,8 +49,7 @@ const renderPopup = (popupContainer, film) => {
   const filmPopupComponent = new FilmPopupView(film);
 
   const closePopup = () => {
-    filmPopupComponent.getElement().remove();
-    filmPopupComponent.removeElement();
+    removeElement(filmPopupComponent);
     document.removeEventListener(`keydown`, onEscKeyDown);
     pageBodyElement.classList.remove(`hide-overflow`);
   };
@@ -65,7 +65,7 @@ const renderPopup = (popupContainer, film) => {
   filmPopupComponent.setClickHandler(() => {
     closePopup();
   });
-  render(popupContainer, RenderPosition.AFTEREND, filmPopupComponent.getElement());
+  render(popupContainer, RenderPosition.AFTEREND, filmPopupComponent);
   pageBodyElement.classList.add(`hide-overflow`);
 };
 
@@ -75,17 +75,17 @@ const renderTopList = (topContainer, topList, topFilms) => {
     for (let i = 0; i < TOP_FILMS_COUNT; i++) {
       renderFilm(getContainer(topList), topFilms[i]);
     }
-    render(topContainer, RenderPosition.BEFOREEND, topList.getElement());
+    render(topContainer, RenderPosition.BEFOREEND, topList);
   }
 };
 
 
 const renderFilmsBlock = (filmsContainer, films) => {
   const filmsBlockComponent = new FilmsBlockView();
-  render(filmsContainer, RenderPosition.BEFOREEND, filmsBlockComponent.getElement());
+  render(filmsContainer, RenderPosition.BEFOREEND, filmsBlockComponent);
 
   if (films.length === 0) {
-    render(filmsBlockComponent.getElement(), RenderPosition.BEFOREEND, new NoFilmsView().getElement());
+    render(filmsBlockComponent, RenderPosition.BEFOREEND, new NoFilmsView());
     return;
   }
 
@@ -94,18 +94,18 @@ const renderFilmsBlock = (filmsContainer, films) => {
   for (let i = 0; i < Math.min(FILMS_COUNT, films.length); i++) {
     renderFilm(containerElement, films[i]);
   }
-  render(filmsListComponent.getElement(), RenderPosition.BEFOREEND, containerElement);
-  render(filmsBlockComponent.getElement(), RenderPosition.BEFOREEND, filmsListComponent.getElement());
-  render(filmsBlockComponent.getElement(), RenderPosition.BEFOREBEGIN, new SortView().getElement());
-  renderTopList(filmsBlockComponent.getElement(), new TopRatedListView(), topRatedFilms);
-  renderTopList(filmsBlockComponent.getElement(), new TopCommentedListView(), topCommentedFilms);
+  render(filmsListComponent, RenderPosition.BEFOREEND, containerElement);
+  render(filmsBlockComponent, RenderPosition.BEFOREEND, filmsListComponent);
+  render(filmsBlockComponent, RenderPosition.BEFOREBEGIN, new SortView());
+  renderTopList(filmsBlockComponent, new TopRatedListView(), topRatedFilms);
+  renderTopList(filmsBlockComponent, new TopCommentedListView(), topCommentedFilms);
 
 
   if (films.length > FILMS_COUNT) {
     let shownFilmsCount = FILMS_COUNT;
     const loadMoreButtonComponent = new LoadMoreButtonView();
 
-    render(filmsListComponent.getElement(), RenderPosition.BEFOREEND, loadMoreButtonComponent.getElement());
+    render(filmsListComponent, RenderPosition.BEFOREEND, loadMoreButtonComponent);
 
     loadMoreButtonComponent.setClickHandler(() => {
       films
@@ -114,14 +114,13 @@ const renderFilmsBlock = (filmsContainer, films) => {
       shownFilmsCount += FILMS_COUNT;
 
       if (films.length <= shownFilmsCount) {
-        loadMoreButtonComponent.getElement().remove();
-        loadMoreButtonComponent.removeElement();
+        removeElement(loadMoreButtonComponent);
       }
     });
   }
 };
 
-render(pageHeaderElement, RenderPosition.BEFOREEND, new UserProfileView(watchedFilmsCount).getElement());
-render(pageMainElement, RenderPosition.BEFOREEND, new FiltersView(filters).getElement());
+render(pageHeaderElement, RenderPosition.BEFOREEND, new UserProfileView(watchedFilmsCount));
+render(pageMainElement, RenderPosition.BEFOREEND, new FiltersView(filters));
 renderFilmsBlock(pageMainElement, filmsCollection);
-render(statsElement, RenderPosition.BEFOREEND, new FooterStatsView().getElement());
+render(statsElement, RenderPosition.BEFOREEND, new FooterStatsView());

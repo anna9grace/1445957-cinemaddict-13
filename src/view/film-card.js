@@ -1,4 +1,4 @@
-import {humanizeFilmDuration, humanizeDate} from "../util.js";
+import {humanizeFilmDuration, humanizeDate} from "../utils/util.js";
 import AbstractView from "./abstract.js";
 
 const MAX_DESCRIPTION_LENGTH = 140;

@@ -1,4 +1,4 @@
-import {getRandomInteger} from "../util.js";
+import {getRandomInteger} from "../utils/util.js";
 import AbstractView from "./abstract.js";
 
 const createStatisticsTemplate = () => {
