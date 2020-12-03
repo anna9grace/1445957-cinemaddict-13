@@ -37,21 +37,15 @@ const topCommentedFilms = filmsCollection
 
 const renderFilm = (filmsList, film) => {
   const filmCardComponent = new FilmCardView(film);
-  const openPopupElements = filmCardComponent.getElement().querySelectorAll(`.film-card__poster, .film-card__title, .film-card__comments`);
-
-  for (let element of openPopupElements) {
-    element.addEventListener(`click`, (evt) => {
-      evt.preventDefault();
-      renderPopup(footerElement, film);
-    });
-  }
+  filmCardComponent.setClickHandler(() => {
+    renderPopup(footerElement, film);
+  });
   render(filmsList, RenderPosition.BEFOREEND, filmCardComponent.getElement());
 };
 
 
 const renderPopup = (popupContainer, film) => {
   const filmPopupComponent = new FilmPopupView(film);
-  const closePopupElement = filmPopupComponent.getElement().querySelector(`.film-details__close-btn`);
 
   const closePopup = () => {
     filmPopupComponent.getElement().remove();
@@ -68,8 +62,7 @@ const renderPopup = (popupContainer, film) => {
   };
 
   document.addEventListener(`keydown`, onEscKeyDown);
-  closePopupElement.addEventListener(`click`, (evt) => {
-    evt.preventDefault();
+  filmPopupComponent.setClickHandler(() => {
     closePopup();
   });
   render(popupContainer, RenderPosition.AFTEREND, filmPopupComponent.getElement());
@@ -114,12 +107,10 @@ const renderFilmsBlock = (filmsContainer, films) => {
 
     render(filmsListComponent.getElement(), RenderPosition.BEFOREEND, loadMoreButtonComponent.getElement());
 
-    loadMoreButtonComponent.getElement().addEventListener(`click`, (evt) => {
-      evt.preventDefault();
+    loadMoreButtonComponent.setClickHandler(() => {
       films
         .slice(shownFilmsCount, shownFilmsCount + FILMS_COUNT)
         .forEach((film) => renderFilm(containerElement, film));
-
       shownFilmsCount += FILMS_COUNT;
 
       if (films.length <= shownFilmsCount) {
