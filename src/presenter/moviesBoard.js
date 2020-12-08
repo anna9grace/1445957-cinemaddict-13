@@ -2,14 +2,16 @@ import FilmsBlockView from "../view/films-block.js";
 import SortView from "../view/sort.js";
 import FilmsListView from "../view/films-list.js";
 import NoFilmsView from "../view/no-films.js";
-// import TopRatedListView from "./view/top-rated-films.js";
-// import TopCommentedListView from "./view/top-commented-films.js";
+import TopRatedListView from "../view/top-rated-films.js";
+import TopCommentedListView from "../view/top-commented-films.js";
 import LoadMoreButtonView from "../view/show-more.js";
 import FilmCardView from "../view/film-card.js";
 import FilmPopupView from "../view/popup.js";
 import {RenderPosition, render, removeElement, getContainer} from "../utils/render.js";
+import {getTopCommentedFilms, getTopRatedFilms} from "../utils/films.js";
 
 const FILMS_COUNT = 5;
+const TOP_FILMS_COUNT = 2;
 
 
 export default class moviesBoard {
@@ -23,9 +25,11 @@ export default class moviesBoard {
     this._filmsListComponent = new FilmsListView();
     this._noFilmsComponent = new NoFilmsView();
     this._loadMoreComponent = new LoadMoreButtonView();
-    // this._topRatedComponent = new TopRatedListView();
-    // this._topCommentedComponent = new TopCommentedListView();
+    this._topRatedComponent = new TopRatedListView();
+    this._topCommentedComponent = new TopCommentedListView();
     this._sortComponent = new SortView();
+
+    this._handleLoadMoreClick = this._handleLoadMoreClick.bind(this);
   }
 
 
@@ -33,7 +37,7 @@ export default class moviesBoard {
     this._filmsCollection = filmsCollection;
 
     render(this._filmsContainer, RenderPosition.BEFOREEND, this._filmsBlockComponent);
-    this._renderFilmsBlock();
+    this._renderFilmsBlock(filmsCollection);
   }
 
 
@@ -76,18 +80,16 @@ export default class moviesBoard {
   }
 
 
-  _renderFilms(from, to, filmsList) {
+  _renderFilms(from, to) {
+    const container = getContainer(this._filmsListComponent);
     this._filmsCollection
       .slice(from, to)
-      .forEach((film) => this._renderFilm(film, filmsList));
+      .forEach((film) => this._renderFilm(film, container));
   }
 
 
   _renderFilmsList() {
-    const listContainer = getContainer(this._filmsListComponent);
-    this._renderFilms(0, Math.min(this._filmsCollection.length, this._renderedFilmsCount), listContainer);
-
-    render(this._filmsListComponent, RenderPosition.BEFOREEND, listContainer);
+    this._renderFilms(0, Math.min(this._filmsCollection.length, this._renderedFilmsCount));
     render(this._filmsBlockComponent, RenderPosition.BEFOREEND, this._filmsListComponent);
 
     if (this._filmsCollection.length > FILMS_COUNT) {
@@ -101,30 +103,42 @@ export default class moviesBoard {
   }
 
 
-  // _renderTopList(topList, topFilms) {
-  //   if (topFilms.length > 0) {
-  //     for (let i = 0; i < TOP_FILMS_COUNT; i++) {
-  //       renderFilm(getContainer(topList), topFilms[i]);
-  //     }
-  //     render(this._filmsBlockComponent, RenderPosition.BEFOREEND, topList);
-  //   }
-  // }
-
-
-  _renderLoadMoreButton() {
-    render(this._filmsListComponent, RenderPosition.BEFOREEND, this._loadMoreComponent);
+  _renderTopList(topFilms, topList) {
+    const container = getContainer(topList);
+    if (topFilms.length > 0) {
+      for (let i = 0; i < Math.min(topFilms.length, TOP_FILMS_COUNT); i++) {
+        this._renderFilm(topFilms[i], container);
+      }
+      render(this._filmsBlockComponent, RenderPosition.BEFOREEND, topList);
+    }
   }
 
 
-  _renderFilmsBlock() {
-    if (this._filmsCollection.length === 0) {
+  _handleLoadMoreClick() {
+    this._renderFilms(this._renderedFilmsCount, this._renderedFilmsCount + FILMS_COUNT,
+        this._listContainer);
+    this._renderedFilmsCount += FILMS_COUNT;
+
+    if (this._filmsCollection.length <= this._renderedFilmsCount) {
+      removeElement(this._loadMoreComponent);
+    }
+  }
+
+  _renderLoadMoreButton() {
+    render(this._filmsListComponent, RenderPosition.BEFOREEND, this._loadMoreComponent);
+    this._loadMoreComponent.setClickHandler(this._handleLoadMoreClick);
+  }
+
+  _renderFilmsBlock(films) {
+    if (films.length === 0) {
       this._renderNoFilms();
       return;
     }
 
     this._renderSort();
     this._renderFilmsList();
-    // this._renderTopList(this._topRatedComponent, topRatedFilms)
-    // this._renderTopList(this._topCommentedComponent, topCommentedFilms)
+    this._renderTopList(getTopRatedFilms(films), this._topRatedComponent);
+    this._renderTopList(getTopCommentedFilms(films), this._topCommentedComponent);
   }
 }
+
