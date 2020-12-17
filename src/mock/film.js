@@ -124,8 +124,11 @@ const generateComments = () => {
   });
 };
 
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+
 export const generateFilm = () => {
   return {
+    id: generateId(),
     name: generateName(),
     originalName: generateName(),
     poster: generatePoster(),

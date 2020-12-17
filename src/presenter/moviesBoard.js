@@ -5,10 +5,11 @@ import NoFilmsView from "../view/no-films.js";
 import TopRatedListView from "../view/top-rated-films.js";
 import TopCommentedListView from "../view/top-commented-films.js";
 import LoadMoreButtonView from "../view/show-more.js";
-import FilmCardView from "../view/film-card.js";
-import FilmPopupView from "../view/popup.js";
+
+import FilmPresenter from "./film.js";
 import {RenderPosition, render, removeElement, getContainer} from "../utils/render.js";
 import {getTopCommentedFilms, getTopRatedFilms} from "../utils/films.js";
+import {updateItem} from "../utils/util.js";
 
 const FILMS_COUNT = 5;
 const TOP_FILMS_COUNT = 2;
@@ -20,6 +21,10 @@ export default class moviesBoard {
     this._popupContainer = popupContainer;
 
     this._renderedFilmsCount = FILMS_COUNT;
+    this._openedPopup = null;
+    this._filmPresenters = {};
+    this._filmRatedPresenters = {};
+    this._filmCommentedPresenters = {};
 
     this._filmsBlockComponent = new FilmsBlockView();
     this._filmsListComponent = new FilmsListView();
@@ -30,11 +35,15 @@ export default class moviesBoard {
     this._sortComponent = new SortView();
 
     this._handleLoadMoreClick = this._handleLoadMoreClick.bind(this);
+    this._handleFilmChange = this._handleFilmChange.bind(this);
+    this._handlePopupChange = this._handlePopupChange.bind(this);
   }
 
 
   init(filmsCollection) {
-    this._filmsCollection = filmsCollection;
+    this._filmsCollection = filmsCollection.slice();
+    this._topRatedFilms = getTopRatedFilms(filmsCollection);
+    this._topCommentedFilms = getTopCommentedFilms(filmsCollection);
 
     render(this._filmsContainer, RenderPosition.BEFOREEND, this._filmsBlockComponent);
     this._renderFilmsBlock(filmsCollection);
@@ -46,37 +55,37 @@ export default class moviesBoard {
   }
 
 
-  _renderFilm(film, filmsList) {
-    const filmCardComponent = new FilmCardView(film);
-    filmCardComponent.setClickHandler(() => {
-      this._renderPopup(film);
-    });
-    render(filmsList, RenderPosition.BEFOREEND, filmCardComponent);
+  _handleFilmChange(updatedFilm) {
+    this._filmsCollection = updateItem(this._filmsCollection, updatedFilm);
+    if (this._filmPresenters[updatedFilm.id]) {
+      this._filmPresenters[updatedFilm.id].init(updatedFilm);
+    }
+    if (this._filmRatedPresenters[updatedFilm.id]) {
+      this._filmRatedPresenters[updatedFilm.id].init(updatedFilm);
+    }
+    if (this._filmCommentedPresenters[updatedFilm.id]) {
+      this._filmCommentedPresenters[updatedFilm.id].init(updatedFilm);
+    }
   }
 
 
-  _renderPopup(film) {
-    const filmPopupComponent = new FilmPopupView(film);
+  _handlePopupChange() {
+    Object
+      .values(this._filmPresenters)
+      .forEach((presenter) => presenter.closePopup());
+    Object
+      .values(this._filmRatedPresenters)
+      .forEach((presenter) => presenter.closePopup());
+    Object
+      .values(this._filmCommentedPresenters)
+      .forEach((presenter) => presenter.closePopup());
+  }
 
-    const closePopup = () => {
-      removeElement(filmPopupComponent);
-      document.removeEventListener(`keydown`, onEscKeyDown);
-      // pageBodyElement.classList.remove(`hide-overflow`);
-    };
 
-    const onEscKeyDown = (evt) => {
-      if (evt.key === `Escape` || evt.key === `Esc`) {
-        evt.preventDefault();
-        closePopup();
-      }
-    };
-
-    document.addEventListener(`keydown`, onEscKeyDown);
-    filmPopupComponent.setClickHandler(() => {
-      closePopup();
-    });
-    render(this._popupContainer, RenderPosition.AFTEREND, filmPopupComponent);
-    // pageBodyElement.classList.add(`hide-overflow`);
+  _renderFilm(film, filmsList, presenters) {
+    const filmPresenter = new FilmPresenter(filmsList, this._popupContainer, this._handleFilmChange, this._handlePopupChange);
+    filmPresenter.init(film);
+    presenters[film.id] = filmPresenter;
   }
 
 
@@ -84,7 +93,7 @@ export default class moviesBoard {
     const container = getContainer(this._filmsListComponent);
     this._filmsCollection
       .slice(from, to)
-      .forEach((film) => this._renderFilm(film, container));
+      .forEach((film) => this._renderFilm(film, container, this._filmPresenters));
   }
 
 
@@ -103,11 +112,11 @@ export default class moviesBoard {
   }
 
 
-  _renderTopList(topFilms, topList) {
+  _renderTopList(topFilms, topList, presenters) {
     const container = getContainer(topList);
     if (topFilms.length > 0) {
       for (let i = 0; i < Math.min(topFilms.length, TOP_FILMS_COUNT); i++) {
-        this._renderFilm(topFilms[i], container);
+        this._renderFilm(topFilms[i], container, presenters);
       }
       render(this._filmsBlockComponent, RenderPosition.BEFOREEND, topList);
     }
@@ -137,8 +146,7 @@ export default class moviesBoard {
 
     this._renderSort();
     this._renderFilmsList();
-    this._renderTopList(getTopRatedFilms(films), this._topRatedComponent);
-    this._renderTopList(getTopCommentedFilms(films), this._topCommentedComponent);
+    this._renderTopList(this._topRatedFilms, this._topRatedComponent, this._filmRatedPresenters);
+    this._renderTopList(this._topCommentedFilms, this._topCommentedComponent, this._filmCommentedPresenters);
   }
 }
-

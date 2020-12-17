@@ -9,7 +9,6 @@ import MovieBoardPresenter from "./presenter/moviesBoard.js";
 
 const MOCK_FILMS_COUNT = 22;
 
-// const pageBodyElement = document.querySelector(`body`);
 const pageHeaderElement = document.querySelector(`.header`);
 const pageMainElement = document.querySelector(`.main`);
 const statsElement = document.querySelector(`.footer__statistics`);
