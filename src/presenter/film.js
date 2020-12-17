@@ -11,7 +11,8 @@ export default class Film {
     this._previousPopupClose = previousPopupClose;
 
     this._filmComponent = null;
-    this._openedPopup = null;
+    this._filmPopupComponent = null;
+
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
@@ -43,12 +44,18 @@ export default class Film {
     removeElement(previousFilmComponent);
   }
 
+  destroy() {
+    removeElement(this._filmComponent);
+    if (this._filmPopupComponent !== null) {
+      removeElement(this._filmPopupComponent);
+    }
+  }
 
   closePopup() {
-    if (this._openedPopup !== null) {
-      removeElement(this._openedPopup);
+    if (this._filmPopupComponent !== null) {
+      removeElement(this._filmPopupComponent);
       document.removeEventListener(`keydown`, this._escKeyDownHandler);
-      this._openedPopup = null;
+      this._filmPopupComponent = null;
       changePageOverflow();
     }
   }
@@ -56,7 +63,6 @@ export default class Film {
   _renderPopup(film) {
     this._previousPopupClose();
     this._filmPopupComponent = new FilmPopupView(film);
-    this._openedPopup = this._filmPopupComponent;
     changePageOverflow();
 
     document.addEventListener(`keydown`, this._escKeyDownHandler);

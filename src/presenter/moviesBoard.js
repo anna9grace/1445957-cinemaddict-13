@@ -21,7 +21,6 @@ export default class moviesBoard {
     this._popupContainer = popupContainer;
 
     this._renderedFilmsCount = FILMS_COUNT;
-    this._openedPopup = null;
     this._filmPresenters = {};
     this._filmRatedPresenters = {};
     this._filmCommentedPresenters = {};
@@ -133,20 +132,39 @@ export default class moviesBoard {
     }
   }
 
+
   _renderLoadMoreButton() {
     render(this._filmsListComponent, RenderPosition.BEFOREEND, this._loadMoreComponent);
     this._loadMoreComponent.setClickHandler(this._handleLoadMoreClick);
   }
+
+
+  _clearFilmsList(presenters) {
+    Object
+      .values(presenters)
+      .forEach((presenter) => presenter.destroy());
+    presenters = {};
+  }
+
+
+  _handleFilmsListsClear() {
+    this._clearFilmsList(this._filmPresenters);
+    this._clearFilmsList(this._filmRatedPresenters);
+    this._clearFilmsList(this._filmCommentedPresenters);
+    this._renderedFilmsCount = FILMS_COUNT;
+    removeElement(this._loadMoreComponent);
+  }
+
 
   _renderFilmsBlock(films) {
     if (films.length === 0) {
       this._renderNoFilms();
       return;
     }
-
     this._renderSort();
     this._renderFilmsList();
     this._renderTopList(this._topRatedFilms, this._topRatedComponent, this._filmRatedPresenters);
     this._renderTopList(this._topCommentedFilms, this._topCommentedComponent, this._filmCommentedPresenters);
   }
+
 }
