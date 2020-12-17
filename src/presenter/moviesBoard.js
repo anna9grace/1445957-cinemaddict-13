@@ -41,8 +41,6 @@ export default class moviesBoard {
 
   init(filmsCollection) {
     this._filmsCollection = filmsCollection.slice();
-    this._topRatedFilms = getTopRatedFilms(filmsCollection);
-    this._topCommentedFilms = getTopCommentedFilms(filmsCollection);
 
     render(this._filmsContainer, RenderPosition.BEFOREEND, this._filmsBlockComponent);
     this._renderFilmsBlock(filmsCollection);
@@ -122,6 +120,12 @@ export default class moviesBoard {
   }
 
 
+  _renderTopLists() {
+    this._renderTopList(getTopRatedFilms(this._filmsCollection), this._topRatedComponent, this._filmRatedPresenters);
+    this._renderTopList(getTopCommentedFilms(this._filmsCollection), this._topCommentedComponent, this._filmCommentedPresenters);
+  }
+
+
   _handleLoadMoreClick() {
     this._renderFilms(this._renderedFilmsCount, this._renderedFilmsCount + FILMS_COUNT,
         this._listContainer);
@@ -163,8 +167,7 @@ export default class moviesBoard {
     }
     this._renderSort();
     this._renderFilmsList();
-    this._renderTopList(this._topRatedFilms, this._topRatedComponent, this._filmRatedPresenters);
-    this._renderTopList(this._topCommentedFilms, this._topCommentedComponent, this._filmCommentedPresenters);
+    this._renderTopLists();
   }
 
 }
