@@ -31,12 +31,28 @@ export const render = (container, place, element) => {
   }
 };
 
-
 export const createElement = (template) => {
   const newElement = document.createElement(`div`);
   newElement.innerHTML = template;
   return newElement.firstChild;
 };
+
+export const replace = (newElement, oldElement) => {
+  if (newElement instanceof Abstract) {
+    newElement = newElement.getElement();
+  }
+  if (oldElement instanceof Abstract) {
+    oldElement = oldElement.getElement();
+  }
+  const parent = oldElement.parentElement;
+
+  if (parent === null || newElement === null || oldElement === null) {
+    throw new Error(`Can't replace unexisting elements`);
+  }
+
+  parent.replaceChild(newElement, oldElement);
+};
+
 
 export const removeElement = (component) => {
   if (!(component instanceof Abstract)) {
@@ -50,4 +66,8 @@ export const removeElement = (component) => {
 
 export const getContainer = (element) => {
   return element.getElement().querySelector(`.films-list__container`);
+};
+
+export const changePageOverflow = () => {
+  document.querySelector(`body`).classList.toggle(`hide-overflow`);
 };
