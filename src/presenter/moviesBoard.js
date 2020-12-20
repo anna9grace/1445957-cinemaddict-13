@@ -8,8 +8,9 @@ import LoadMoreButtonView from "../view/show-more.js";
 
 import FilmPresenter from "./film.js";
 import {RenderPosition, render, removeElement, getContainer} from "../utils/render.js";
-import {getTopCommentedFilms, getTopRatedFilms} from "../utils/films.js";
+import {getTopCommentedFilms, getTopRatedFilms, sortByRating, sortByDate} from "../utils/films.js";
 import {updateItem} from "../utils/util.js";
+import {SortType} from "../utils/constants.js";
 
 const FILMS_COUNT = 5;
 const TOP_FILMS_COUNT = 2;
@@ -24,6 +25,7 @@ export default class moviesBoard {
     this._filmPresenters = {};
     this._filmRatedPresenters = {};
     this._filmCommentedPresenters = {};
+    this._currentSortType = SortType.DEFAULT;
 
     this._filmsBlockComponent = new FilmsBlockView();
     this._filmsListComponent = new FilmsListView();
@@ -36,46 +38,16 @@ export default class moviesBoard {
     this._handleLoadMoreClick = this._handleLoadMoreClick.bind(this);
     this._handleFilmChange = this._handleFilmChange.bind(this);
     this._handlePopupChange = this._handlePopupChange.bind(this);
+    this._handleSortChange = this._handleSortChange.bind(this);
   }
 
 
   init(filmsCollection) {
     this._filmsCollection = filmsCollection.slice();
+    this._initialFilmsCollection = filmsCollection.slice();
 
     render(this._filmsContainer, RenderPosition.BEFOREEND, this._filmsBlockComponent);
     this._renderFilmsBlock(filmsCollection);
-  }
-
-
-  _renderSort() {
-    render(this._filmsBlockComponent, RenderPosition.BEFOREBEGIN, this._sortComponent);
-  }
-
-
-  _handleFilmChange(updatedFilm) {
-    this._filmsCollection = updateItem(this._filmsCollection, updatedFilm);
-    if (this._filmPresenters[updatedFilm.id]) {
-      this._filmPresenters[updatedFilm.id].init(updatedFilm);
-    }
-    if (this._filmRatedPresenters[updatedFilm.id]) {
-      this._filmRatedPresenters[updatedFilm.id].init(updatedFilm);
-    }
-    if (this._filmCommentedPresenters[updatedFilm.id]) {
-      this._filmCommentedPresenters[updatedFilm.id].init(updatedFilm);
-    }
-  }
-
-
-  _handlePopupChange() {
-    Object
-      .values(this._filmPresenters)
-      .forEach((presenter) => presenter.closePopup());
-    Object
-      .values(this._filmRatedPresenters)
-      .forEach((presenter) => presenter.closePopup());
-    Object
-      .values(this._filmCommentedPresenters)
-      .forEach((presenter) => presenter.closePopup());
   }
 
 
@@ -160,6 +132,66 @@ export default class moviesBoard {
   }
 
 
+  _handleFilmChange(updatedFilm) {
+    this._filmsCollection = updateItem(this._filmsCollection, updatedFilm);
+    if (this._filmPresenters[updatedFilm.id]) {
+      this._filmPresenters[updatedFilm.id].init(updatedFilm);
+    }
+    if (this._filmRatedPresenters[updatedFilm.id]) {
+      this._filmRatedPresenters[updatedFilm.id].init(updatedFilm);
+    }
+    if (this._filmCommentedPresenters[updatedFilm.id]) {
+      this._filmCommentedPresenters[updatedFilm.id].init(updatedFilm);
+    }
+  }
+
+
+  _handlePopupChange() {
+    Object
+      .values(this._filmPresenters)
+      .forEach((presenter) => presenter.closePopup());
+    Object
+      .values(this._filmRatedPresenters)
+      .forEach((presenter) => presenter.closePopup());
+    Object
+      .values(this._filmCommentedPresenters)
+      .forEach((presenter) => presenter.closePopup());
+  }
+
+
+  _sortFilms(sortType) {
+    switch (sortType) {
+      case SortType.BY_DATE:
+        sortByDate(this._filmsCollection);
+        break;
+      case SortType.BY_RATING:
+        sortByRating(this._filmsCollection);
+        break;
+      default:
+        this._filmsCollection = this._initialFilmsCollection.slice();
+        break;
+    }
+    this._currentSortType = sortType;
+  }
+
+
+  _handleSortChange(sortType) {
+    if (sortType === this._currentSortType) {
+      return;
+    }
+    this._sortFilms(sortType);
+    this._handleFilmsListsClear();
+    this._renderFilmsList();
+    this._renderTopLists();
+  }
+
+
+  _renderSort() {
+    render(this._filmsBlockComponent, RenderPosition.BEFOREBEGIN, this._sortComponent);
+    this._sortComponent.setSortChangeHandler(this._handleSortChange);
+  }
+
+
   _renderFilmsBlock(films) {
     if (films.length === 0) {
       this._renderNoFilms();
@@ -169,5 +201,4 @@ export default class moviesBoard {
     this._renderFilmsList();
     this._renderTopLists();
   }
-
 }
