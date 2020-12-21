@@ -146,5 +146,7 @@ export const generateFilm = () => {
     isWatched: Boolean(getRandomInteger(0, 1)),
     isFavorite: Boolean(getRandomInteger(0, 1)),
     ageRating: `${0 + 2 * getRandomInteger(0, 9)}+`,
+    newEmoji: null,
+    newCommentText: ``,
   };
 };
