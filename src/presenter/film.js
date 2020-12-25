@@ -1,5 +1,6 @@
 import FilmCardView from "../view/film-card.js";
 import FilmPopupView from "../view/popup.js";
+import {UserAction, UpdateType} from "../utils/constants.js";
 import {RenderPosition, render, removeElement, replace, changePageOverflow} from "../utils/render.js";
 
 
@@ -91,14 +92,26 @@ export default class Film {
   }
 
   _handleWatchlistClick() {
-    this._filmChange(Object.assign({}, this._film, {isInWatchlist: !this._film.isInWatchlist}));
+    this._filmChange(
+        UserAction.UPDATE_FILM,
+        UpdateType.MINOR,
+        Object.assign({}, this._film, {isInWatchlist: !this._film.isInWatchlist})
+    );
   }
 
   _handleWatchedClick() {
-    this._filmChange(Object.assign({}, this._film, {isWatched: !this._film.isWatched}));
+    this._filmChange(
+        UserAction.UPDATE_FILM,
+        UpdateType.MINOR,
+        Object.assign({}, this._film, {isWatched: !this._film.isWatched})
+    );
   }
 
   _handleFavoriteClick() {
-    this._filmChange(Object.assign({}, this._film, {isFavorite: !this._film.isFavorite}));
+    this._filmChange(
+        UserAction.UPDATE_FILM,
+        UpdateType.MINOR,
+        Object.assign({}, this._film, {isFavorite: !this._film.isFavorite})
+    );
   }
 }
