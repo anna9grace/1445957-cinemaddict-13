@@ -1,11 +1,10 @@
 import UserProfileView from "./view/user-profile.js";
-import FiltersView from "./view/filters.js";
 import FooterStatsView from "./view/stats.js";
 import {generateFilm} from "./mock/film.js";
-import {generateFilters} from "./mock/filters.js";
 import {getWatchedFilms} from "./utils/util.js";
 import {RenderPosition, render} from "./utils/render.js";
 import MovieBoardPresenter from "./presenter/moviesBoard.js";
+import FilterBoardPresenter from "./presenter/filter.js";
 import FilmsModel from "./model/films.js";
 import FilterModel from "./model/filters.js";
 
@@ -23,12 +22,12 @@ filmsModel.setFilms(filmsCollection);
 
 const filterModel = new FilterModel();
 
-const filters = generateFilters(filmsCollection);
 const watchedFilmsCount = getWatchedFilms(filmsCollection);
 
 const moviesBoardPresenter = new MovieBoardPresenter(pageMainElement, footerElement, filmsModel, filterModel);
+const filterBoardPresenter = new FilterBoardPresenter(pageMainElement, filmsModel, filterModel);
 
 render(pageHeaderElement, RenderPosition.BEFOREEND, new UserProfileView(watchedFilmsCount));
-render(pageMainElement, RenderPosition.BEFOREEND, new FiltersView(filters));
+filterBoardPresenter.init();
 moviesBoardPresenter.init();
 render(statsElement, RenderPosition.BEFOREEND, new FooterStatsView());

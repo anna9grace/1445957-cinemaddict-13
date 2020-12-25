@@ -10,6 +10,7 @@ import FilmPresenter from "./film.js";
 import {RenderPosition, render, removeElement, getContainer} from "../utils/render.js";
 import {getTopCommentedFilms, getTopRatedFilms, sortByRating, sortByDate} from "../utils/films.js";
 import {SortType, UpdateType, UserAction} from "../utils/constants.js";
+import {filter} from "../utils/filter.js";
 
 const FILMS_COUNT_PER_STEP = 5;
 const TOP_FILMS_COUNT = 2;
@@ -45,7 +46,6 @@ export default class moviesBoard {
 
 
   init() {
-
     render(this._filmsContainer, RenderPosition.BEFOREEND, this._filmsBlockComponent);
 
     this._filmsModel.addObserver(this._handleModelEvent);
@@ -68,10 +68,9 @@ export default class moviesBoard {
 
 
   _getFilms() {
-    // const filterType = this._filterModel.getFilter();
+    const filterType = this._filterModel.getFilter();
     const films = this._filmsModel.getFilms();
-    // const filtredTasks = filter[filterType](tasks);
-    const filteredFilms = films.slice();
+    const filteredFilms = filter[filterType](films);
 
     switch (this._currentSortType) {
       case SortType.BY_DATE:
@@ -109,6 +108,7 @@ export default class moviesBoard {
         if (this._filmCommentedPresenters[data.id]) {
           this._filmCommentedPresenters[data.id].init(data);
         }
+        // fil;
         break;
       case UpdateType.MINOR:
         this._clearBoard();
@@ -123,7 +123,8 @@ export default class moviesBoard {
 
 
   _renderFilm(film, filmsList, presenters) {
-    const filmPresenter = new FilmPresenter(filmsList, this._popupContainer, this._handleViewAction, this._handlePopupChange);
+    const currentFilter = this._filterModel.getFilter();
+    const filmPresenter = new FilmPresenter(filmsList, this._popupContainer, this._handleViewAction, this._handlePopupChange, currentFilter);
     filmPresenter.init(film);
     presenters[film.id] = filmPresenter;
   }

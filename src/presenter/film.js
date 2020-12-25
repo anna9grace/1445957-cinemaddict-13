@@ -1,15 +1,16 @@
 import FilmCardView from "../view/film-card.js";
 import FilmPopupView from "../view/popup.js";
-import {UserAction, UpdateType} from "../utils/constants.js";
+import {UserAction, UpdateType, FilterType} from "../utils/constants.js";
 import {RenderPosition, render, removeElement, replace, changePageOverflow} from "../utils/render.js";
 
 
 export default class Film {
-  constructor(filmListContainer, popupContainer, filmChange, previousPopupClose) {
+  constructor(filmListContainer, popupContainer, filmChange, previousPopupClose, currentFilter) {
     this._filmListContainer = filmListContainer;
     this._popupContainer = popupContainer;
     this._filmChange = filmChange;
     this._previousPopupClose = previousPopupClose;
+    this._currentFilter = currentFilter;
 
     this._filmComponent = null;
     this._filmPopupComponent = null;
@@ -42,13 +43,14 @@ export default class Film {
       return;
     }
     replace(this._filmComponent, previousFilmComponent);
+
     removeElement(previousFilmComponent);
   }
 
   destroy() {
     removeElement(this._filmComponent);
     if (this._filmPopupComponent !== null) {
-      removeElement(this._filmPopupComponent);
+      this.closePopup();
     }
   }
 
@@ -91,26 +93,30 @@ export default class Film {
     this.closePopup();
   }
 
+
   _handleWatchlistClick() {
+    const isMinorUpdate = (this._currentFilter === FilterType.WATCHLIST);
     this._filmChange(
         UserAction.UPDATE_FILM,
-        UpdateType.MINOR,
+        isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
         Object.assign({}, this._film, {isInWatchlist: !this._film.isInWatchlist})
     );
   }
 
   _handleWatchedClick() {
+    const isMinorUpdate = (this._currentFilter === FilterType.HISTORY);
     this._filmChange(
         UserAction.UPDATE_FILM,
-        UpdateType.MINOR,
+        isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
         Object.assign({}, this._film, {isWatched: !this._film.isWatched})
     );
   }
 
   _handleFavoriteClick() {
+    const isMinorUpdate = (this._currentFilter === FilterType.FAVORITES);
     this._filmChange(
         UserAction.UPDATE_FILM,
-        UpdateType.MINOR,
+        isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
         Object.assign({}, this._film, {isFavorite: !this._film.isFavorite})
     );
   }
