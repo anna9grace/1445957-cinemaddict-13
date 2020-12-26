@@ -7,6 +7,7 @@ import MovieBoardPresenter from "./presenter/moviesBoard.js";
 import FilterBoardPresenter from "./presenter/filter.js";
 import FilmsModel from "./model/films.js";
 import FilterModel from "./model/filters.js";
+import CommentsModel from "./model/comments.js";
 
 const MOCK_FILMS_COUNT = 22;
 
@@ -16,15 +17,16 @@ const statsElement = document.querySelector(`.footer__statistics`);
 const footerElement = document.querySelector(`.footer`);
 
 const filmsCollection = new Array(MOCK_FILMS_COUNT).fill().map(generateFilm);
-
 const filmsModel = new FilmsModel();
-filmsModel.setFilms(filmsCollection);
-
+const commentsModel = new CommentsModel();
 const filterModel = new FilterModel();
+filmsModel.setFilms(filmsCollection);
+commentsModel.setComments(filmsCollection);
+
 
 const watchedFilmsCount = getWatchedFilms(filmsCollection);
 
-const moviesBoardPresenter = new MovieBoardPresenter(pageMainElement, footerElement, filmsModel, filterModel);
+const moviesBoardPresenter = new MovieBoardPresenter(pageMainElement, footerElement, filmsModel, filterModel, commentsModel);
 const filterBoardPresenter = new FilterBoardPresenter(pageMainElement, filmsModel, filterModel);
 
 render(pageHeaderElement, RenderPosition.BEFOREEND, new UserProfileView(watchedFilmsCount));

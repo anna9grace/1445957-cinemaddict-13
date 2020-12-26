@@ -17,11 +17,12 @@ const TOP_FILMS_COUNT = 2;
 
 
 export default class moviesBoard {
-  constructor(filmsContainer, popupContainer, filmsModel, filterModel) {
+  constructor(filmsContainer, popupContainer, filmsModel, filterModel, commentsModel) {
     this._filmsContainer = filmsContainer;
     this._popupContainer = popupContainer;
     this._filmsModel = filmsModel;
     this._filterModel = filterModel;
+    this._commentsModel = commentsModel;
 
     this._renderedFilmsCount = FILMS_COUNT_PER_STEP;
     this._filmPresenters = {};
@@ -50,6 +51,7 @@ export default class moviesBoard {
 
     this._filmsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
+    this._commentsModel.addObserver(this._handleModelEvent);
     this._renderFilmsBoard();
   }
 
@@ -64,6 +66,7 @@ export default class moviesBoard {
 
     this._filmsModel.removeObserver(this._handleModelEvent);
     this._filterModel.removeObserver(this._handleModelEvent);
+    this._commentsModel.removeObserver(this._handleModelEvent);
   }
 
 
@@ -87,28 +90,19 @@ export default class moviesBoard {
       case UserAction.UPDATE_FILM:
         this._filmsModel.updateFilm(updateType, update);
         break;
-      // case UserAction.ADD_COMMENT:
-      //   this._filmsModel.addTask(updateType, update);
-      //   break;
-      // case UserAction.DELETE_COMMENT:
-      //   this._filmsModel.deleteTask(updateType, update);
-      //   break;
+      case UserAction.ADD_COMMENT:
+        this._commentsModel.addComment(updateType, update);
+        break;
+      case UserAction.DELETE_COMMENT:
+        this._commentsModel.deleteComment(updateType, update);
+        break;
     }
   }
 
   _handleModelEvent(updateType, data) {
     switch (updateType) {
       case UpdateType.PATCH:
-        if (this._filmPresenters[data.id]) {
-          this._filmPresenters[data.id].init(data);
-        }
-        if (this._filmRatedPresenters[data.id]) {
-          this._filmRatedPresenters[data.id].init(data);
-        }
-        if (this._filmCommentedPresenters[data.id]) {
-          this._filmCommentedPresenters[data.id].init(data);
-        }
-        // fil;
+        this._updateFilm(data);
         break;
       case UpdateType.MINOR:
         this._clearBoard();
@@ -124,9 +118,22 @@ export default class moviesBoard {
 
   _renderFilm(film, filmsList, presenters) {
     const currentFilter = this._filterModel.getFilter();
-    const filmPresenter = new FilmPresenter(filmsList, this._popupContainer, this._handleViewAction, this._handlePopupChange, currentFilter);
+    const filmPresenter = new FilmPresenter(filmsList, this._popupContainer, this._handleViewAction, this._handlePopupChange, this._commentsModel, currentFilter);
     filmPresenter.init(film);
     presenters[film.id] = filmPresenter;
+  }
+
+
+  _updateFilm(film) {
+    if (this._filmPresenters[film.id]) {
+      this._filmPresenters[film.id].init(film);
+    }
+    if (this._filmRatedPresenters[film.id]) {
+      this._filmRatedPresenters[film.id].init(film);
+    }
+    if (this._filmCommentedPresenters[film.id]) {
+      this._filmCommentedPresenters[film.id].init(film);
+    }
   }
 
 
@@ -165,9 +172,11 @@ export default class moviesBoard {
   }
 
 
-  _renderTopLists() {
-    const films = this._getFilms();
+  _renderTopRatedList(films) {
     this._renderTopList(getTopRatedFilms(films), this._topRatedComponent, this._filmRatedPresenters);
+  }
+
+  _renderTopCommentedList(films) {
     this._renderTopList(getTopCommentedFilms(films), this._topCommentedComponent, this._filmCommentedPresenters);
   }
 
@@ -233,6 +242,7 @@ export default class moviesBoard {
     this._renderFilmsBoard();
   }
 
+
   _renderSort() {
     if (this._sortComponent !== null) {
       this._sortComponent = null;
@@ -266,12 +276,14 @@ export default class moviesBoard {
 
 
   _renderFilmsBoard() {
-    if (this._getFilms().length === 0) {
+    const films = this._getFilms();
+    if (films.length === 0) {
       this._renderNoFilms();
       return;
     }
     this._renderSort();
     this._renderFilmsList();
-    this._renderTopLists();
+    this._renderTopRatedList(films);
+    this._renderTopCommentedList(films);
   }
 }
