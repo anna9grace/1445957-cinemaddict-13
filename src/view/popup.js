@@ -2,6 +2,7 @@ import {humanizeFilmDuration, humanizeDate, getRandomArrayElement} from "../util
 import {authors} from "../utils/constants.js";
 import SmartView from "./smart.js";
 import dayjs from "dayjs";
+import he from "he";
 
 
 const renderControlsState = (controlsState) => {
@@ -27,7 +28,7 @@ const createCommentTemplate = (comment) => {
       ${emoji ? renderEmoji(emoji) : ``}
     </span>
     <div>
-      <p class="film-details__comment-text">${text}</p>
+      <p class="film-details__comment-text">${he.encode(text)}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
         <span class="film-details__comment-day">${humanizeDate(date, `YYYY/MM/DD HH:mm`)}</span>
