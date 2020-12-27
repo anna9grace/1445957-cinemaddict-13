@@ -34,7 +34,7 @@ export default class Filter {
     this._renderProfileStatus();
 
     if (prevFilterComponent === null) {
-      render(this._filterContainer, RenderPosition.BEFOREEND, this._filterComponent);
+      render(this._filterContainer, RenderPosition.AFTERBEGIN, this._filterComponent);
       return;
     }
 

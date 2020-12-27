@@ -1,4 +1,6 @@
-import FooterStatsView from "./view/stats.js";
+import NavigationView from "./view/navigation.js";
+import FooterStatsView from "./view/short-stats.js";
+import StatisticsView from "./view/statistics.js";
 import {generateFilm} from "./mock/film.js";
 import {RenderPosition, render} from "./utils/render.js";
 import MovieBoardPresenter from "./presenter/moviesBoard.js";
@@ -21,10 +23,33 @@ const filterModel = new FilterModel();
 filmsModel.setFilms(filmsCollection);
 commentsModel.setComments(filmsCollection);
 
+const navigationComponent = new NavigationView();
 
 const moviesBoardPresenter = new MovieBoardPresenter(pageMainElement, footerElement, filmsModel, filterModel, commentsModel);
-const filterBoardPresenter = new FilterBoardPresenter(pageMainElement, pageHeaderElement, filmsModel, filterModel);
+const filterBoardPresenter = new FilterBoardPresenter(navigationComponent, pageHeaderElement, filmsModel, filterModel);
+
+render(pageMainElement, RenderPosition.BEFOREEND, navigationComponent);
 
 filterBoardPresenter.init();
 moviesBoardPresenter.init();
+
+const statisticsComponent = new StatisticsView();
+render(pageMainElement, RenderPosition.BEFOREEND, statisticsComponent);
 render(statsElement, RenderPosition.BEFOREEND, new FooterStatsView());
+
+
+const handleBoardToggle = (isMenuActive) => {
+  switch (isMenuActive) {
+    case false:
+      moviesBoardPresenter.showFilmsBoard();
+      statisticsComponent.hide();
+      break;
+    case true:
+      moviesBoardPresenter.hideFilmsBoard();
+      statisticsComponent.show();
+      break;
+  }
+};
+
+navigationComponent.setMenuClickHandler(handleBoardToggle);
+statisticsComponent.hide();
