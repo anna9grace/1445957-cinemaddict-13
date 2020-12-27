@@ -7,8 +7,8 @@ const renderControlsState = (controlsState) => {
   return (controlsState) ? `film-card__controls-item--active` : ``;
 };
 
-const createFilmCardTemplate = (film) => {
-  const {name, poster, rating, releaseDate, duration, genres, description, comments, isInWatchlist, isWatched,
+const createFilmCardTemplate = (film, comments) => {
+  const {name, poster, rating, releaseDate, duration, genres, description, isInWatchlist, isWatched,
     isFavorite} = film;
 
   const commentsCount = (comments === null) ? 0 : comments.length;
@@ -36,9 +36,10 @@ const createFilmCardTemplate = (film) => {
 };
 
 export default class Film extends AbstractView {
-  constructor(film) {
+  constructor(film, comments) {
     super();
     this._film = film;
+    this._comments = comments;
     this._clickHandler = this._clickHandler.bind(this);
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
     this._watchedClickHandler = this._watchedClickHandler.bind(this);
@@ -46,7 +47,7 @@ export default class Film extends AbstractView {
   }
 
   getTemplate() {
-    return createFilmCardTemplate(this._film);
+    return createFilmCardTemplate(this._film, this._comments);
   }
 
   _clickHandler(evt) {

@@ -12,12 +12,12 @@ export const sortByDate = (films) => {
   return films.sort((filmA, filmB) => dayjs(filmB.releaseDate).diff(dayjs(filmA.releaseDate)));
 };
 
-export const getTopCommentedFilms = (allFilms) => {
-  const commentedFilms = allFilms.filter((film) => film.comments !== null);
+export const getTopCommentedFilms = (films) => {
+  const commentedFilms = films.filter((film) => film.comments.length > 0);
   return sortByComments(commentedFilms);
 };
 
-export const getTopRatedFilms = (allFilms) => {
-  const ratedFilms = allFilms.filter((film) => +film.rating !== 0);
+export const getTopRatedFilms = (films) => {
+  const ratedFilms = films.filter((film) => +film.rating !== 0);
   return sortByRating(ratedFilms);
 };

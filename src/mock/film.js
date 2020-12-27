@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
-import {getRandomInteger} from "../utils/util.js";
-import {getRandomArrayElement} from "../utils/util.js";
+import {getRandomInteger, getRandomArrayElement} from "../utils/util.js";
+import {authors} from "../utils/constants.js";
 dayjs.extend(duration);
 
 const randomText = [
@@ -107,15 +107,17 @@ const generateDescription = () => {
   return description;
 };
 
-const generateComments = () => {
+const generateComments = (filmId) => {
   const emojies = [`smile`, `sleeping`, `puke`, `angry`];
-  const authors = [`John Doe`, `Tim Macoveev`, `Joe Black`, `John Smith`];
   const commentsNumber = getRandomInteger(0, 5);
   if (commentsNumber === 0) {
-    return null;
+    return [];
   }
+  let id = -1;
   return new Array(commentsNumber).fill().map(() => {
+    id++;
     return {
+      id: filmId + id.toString(),
       text: getRandomArrayElement(randomText),
       emoji: getRandomArrayElement(emojies),
       author: getRandomArrayElement(authors),
@@ -127,8 +129,10 @@ const generateComments = () => {
 const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 export const generateFilm = () => {
+  const filmId = generateId();
+
   return {
-    id: generateId(),
+    id: filmId,
     name: generateName(),
     originalName: generateName(),
     poster: generatePoster(),
@@ -141,11 +145,11 @@ export const generateFilm = () => {
     country: generateCountry(),
     genres: generateGenres(),
     description: generateDescription(),
-    comments: generateComments(),
     isInWatchlist: Boolean(getRandomInteger(0, 1)),
     isWatched: Boolean(getRandomInteger(0, 1)),
     isFavorite: Boolean(getRandomInteger(0, 1)),
     ageRating: `${0 + 2 * getRandomInteger(0, 9)}+`,
+    comments: generateComments(filmId),
     newEmoji: null,
     newCommentText: ``,
   };

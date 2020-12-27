@@ -1,11 +1,13 @@
 import UserProfileView from "./view/user-profile.js";
-import FiltersView from "./view/filters.js";
 import FooterStatsView from "./view/stats.js";
 import {generateFilm} from "./mock/film.js";
-import {generateFilters} from "./mock/filters.js";
 import {getWatchedFilms} from "./utils/util.js";
 import {RenderPosition, render} from "./utils/render.js";
 import MovieBoardPresenter from "./presenter/moviesBoard.js";
+import FilterBoardPresenter from "./presenter/filter.js";
+import FilmsModel from "./model/films.js";
+import FilterModel from "./model/filters.js";
+import CommentsModel from "./model/comments.js";
 
 const MOCK_FILMS_COUNT = 22;
 
@@ -15,12 +17,19 @@ const statsElement = document.querySelector(`.footer__statistics`);
 const footerElement = document.querySelector(`.footer`);
 
 const filmsCollection = new Array(MOCK_FILMS_COUNT).fill().map(generateFilm);
-const filters = generateFilters(filmsCollection);
+const filmsModel = new FilmsModel();
+const commentsModel = new CommentsModel();
+const filterModel = new FilterModel();
+filmsModel.setFilms(filmsCollection);
+commentsModel.setComments(filmsCollection);
+
+
 const watchedFilmsCount = getWatchedFilms(filmsCollection);
 
-const moviesBoardPresenter = new MovieBoardPresenter(pageMainElement, footerElement);
+const moviesBoardPresenter = new MovieBoardPresenter(pageMainElement, footerElement, filmsModel, filterModel, commentsModel);
+const filterBoardPresenter = new FilterBoardPresenter(pageMainElement, filmsModel, filterModel);
 
 render(pageHeaderElement, RenderPosition.BEFOREEND, new UserProfileView(watchedFilmsCount));
-render(pageMainElement, RenderPosition.BEFOREEND, new FiltersView(filters));
-moviesBoardPresenter.init(filmsCollection);
+filterBoardPresenter.init();
+moviesBoardPresenter.init();
 render(statsElement, RenderPosition.BEFOREEND, new FooterStatsView());
