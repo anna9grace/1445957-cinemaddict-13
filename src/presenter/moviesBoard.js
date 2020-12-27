@@ -109,7 +109,7 @@ export default class moviesBoard {
         this._renderFilmsBoard();
         break;
       case UpdateType.MAJOR:
-        this._clearBoard({resetRenderedFilmsCount: true, resetSortType: true});
+        this._clearBoard({resetRenderedFilmCount: true, resetSortType: true});
         this._renderFilmsBoard();
         break;
     }

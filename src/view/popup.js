@@ -1,8 +1,10 @@
 import {humanizeDuration, humanizeDate, getRandomArrayElement} from "../utils/util.js";
 import {authors} from "../utils/constants.js";
 import SmartView from "./smart.js";
-import dayjs from "dayjs";
 import he from "he";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
 
 
 const renderControlsState = (controlsState) => {
@@ -31,7 +33,7 @@ const createCommentTemplate = (comment) => {
       <p class="film-details__comment-text">${he.encode(text)}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
-        <span class="film-details__comment-day">${humanizeDate(date, `YYYY/MM/DD HH:mm`)}</span>
+        <span class="film-details__comment-day">${dayjs(date).fromNow()}</span>
         <button class="film-details__comment-delete">Delete</button>
       </p>
     </div>
