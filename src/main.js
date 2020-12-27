@@ -1,7 +1,5 @@
-import UserProfileView from "./view/user-profile.js";
 import FooterStatsView from "./view/stats.js";
 import {generateFilm} from "./mock/film.js";
-import {getWatchedFilms} from "./utils/util.js";
 import {RenderPosition, render} from "./utils/render.js";
 import MovieBoardPresenter from "./presenter/moviesBoard.js";
 import FilterBoardPresenter from "./presenter/filter.js";
@@ -24,12 +22,9 @@ filmsModel.setFilms(filmsCollection);
 commentsModel.setComments(filmsCollection);
 
 
-const watchedFilmsCount = getWatchedFilms(filmsCollection);
-
 const moviesBoardPresenter = new MovieBoardPresenter(pageMainElement, footerElement, filmsModel, filterModel, commentsModel);
-const filterBoardPresenter = new FilterBoardPresenter(pageMainElement, filmsModel, filterModel);
+const filterBoardPresenter = new FilterBoardPresenter(pageMainElement, pageHeaderElement, filmsModel, filterModel);
 
-render(pageHeaderElement, RenderPosition.BEFOREEND, new UserProfileView(watchedFilmsCount));
 filterBoardPresenter.init();
 moviesBoardPresenter.init();
 render(statsElement, RenderPosition.BEFOREEND, new FooterStatsView());

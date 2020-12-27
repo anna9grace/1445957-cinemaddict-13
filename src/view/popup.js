@@ -1,4 +1,4 @@
-import {humanizeFilmDuration, humanizeDate, getRandomArrayElement} from "../utils/util.js";
+import {humanizeDuration, humanizeDate, getRandomArrayElement} from "../utils/util.js";
 import {authors} from "../utils/constants.js";
 import SmartView from "./smart.js";
 import dayjs from "dayjs";
@@ -134,7 +134,7 @@ const createPopupTemplate = (data) => {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${humanizeFilmDuration(duration)}</td>
+                <td class="film-details__cell">${humanizeDuration(duration)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>

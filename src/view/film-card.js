@@ -1,4 +1,4 @@
-import {humanizeFilmDuration, humanizeDate} from "../utils/util.js";
+import {humanizeDuration, humanizeDate} from "../utils/util.js";
 import AbstractView from "./abstract.js";
 
 const MAX_DESCRIPTION_LENGTH = 140;
@@ -21,7 +21,7 @@ const createFilmCardTemplate = (film, comments) => {
     <p class="film-card__rating">${rating}</p>
     <p class="film-card__info">
       <span class="film-card__year">${humanizeDate(releaseDate, `YYYY`)}</span>
-      <span class="film-card__duration">${humanizeFilmDuration(duration)}</span>
+      <span class="film-card__duration">${humanizeDuration(duration)}</span>
       <span class="film-card__genre">${genres.join(`, `)}</span>
     </p>
     <img src="${poster}" alt="${name}" class="film-card__poster">

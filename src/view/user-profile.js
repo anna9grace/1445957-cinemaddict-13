@@ -1,4 +1,4 @@
-import AbstractView from "./abstract.js";
+import Abstract from "./abstract.js";
 
 const RankMinFilmsWatched = {
   "1": `Novice`,
@@ -10,7 +10,7 @@ const createProfileRankTemplate = (watchedFilms) => {
   let profileRank = null;
 
   Object.entries(RankMinFilmsWatched).forEach(([minCount, rank]) => {
-    if (watchedFilms >= +minCount) {
+    if (watchedFilms.length >= +minCount) {
       profileRank = rank;
     }
   });
@@ -24,7 +24,7 @@ const createUserProfileTemplate = (films) => {
     </section>`;
 };
 
-export default class UserProfile extends AbstractView {
+export default class UserProfile extends Abstract {
   constructor(films) {
     super();
     this._films = films;
