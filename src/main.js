@@ -49,7 +49,7 @@ const handleBoardToggle = (isMenuActive) => {
       moviesBoardPresenter.hideFilmsBoard();
       filterBoardPresenter.setFiltersInactive(true);
       statisticsComponent.show();
-      statisticsComponent.updateWatchedFilms(filmsModel.getFilms());
+      statisticsComponent.setWatchedFilms(filmsModel.getFilms());
       break;
   }
 };

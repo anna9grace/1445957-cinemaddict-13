@@ -1,9 +1,11 @@
 import {RankMinFilmsWatched} from "./constants.js";
+import {makeItemsUnique} from "../utils/util.js";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import isBetween from "dayjs/plugin/isBetween";
 dayjs.extend(duration);
 dayjs.extend(isBetween);
+
 
 export const getProfileRank = (watchedFilms) => {
   let profileRank = null;
@@ -27,7 +29,17 @@ export const countFilmsByGenre = (filmGenres, genre) => {
 };
 
 export const getFilmsWatchedInPeriod = (watchedFilms, dateFrom, dateTo) => {
-  return watchedFilms.filter(
-      (film) => dayjs(film.watchDate).isBetween(dateFrom, dateTo)
-  );
+  return dateFrom === null
+    ? watchedFilms
+    : watchedFilms.filter(
+        (film) => dayjs(film.watchDate).isBetween(dateFrom, dateTo)
+    );
+};
+
+export const getSortedUniqueGenres = (watchedGenres) => {
+  const genres = watchedGenres;
+  return makeItemsUnique(genres).sort((genreA, genreB) => {
+    return countFilmsByGenre(watchedGenres, genreA)
+          < countFilmsByGenre(watchedGenres, genreB) ? 1 : -1;
+  });
 };

@@ -1,10 +1,82 @@
 import SmartView from "./smart.js";
-import {getProfileRank, getTotalWatchingTime, countFilmsByGenre, getFilmsWatchedInPeriod} from "../utils/statistics.js";
-import {makeItemsUnique} from "../utils/util.js";
+import {getProfileRank, getTotalWatchingTime, countFilmsByGenre, getFilmsWatchedInPeriod, getSortedUniqueGenres} from "../utils/statistics.js";
 import {Period} from "../utils/constants.js";
 import dayjs from "dayjs";
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+
+const renderChart = (statisticCtx, watchedFilms, dateFrom, dateTo) => {
+  const BAR_HEIGHT = 50;
+  const watchedFilmsInPeriod = getFilmsWatchedInPeriod(watchedFilms, dateFrom, dateTo);
+  const watchedGenres = [];
+
+  watchedFilmsInPeriod.forEach((film) => {
+    watchedGenres.push(...film.genres);
+  });
+
+  const uniqueGenres = getSortedUniqueGenres(watchedGenres);
+  const filmsByGenreCounts = uniqueGenres.map((genre) => countFilmsByGenre(watchedGenres, genre));
+
+  statisticCtx.height = BAR_HEIGHT * uniqueGenres.length;
+
+  return new Chart(statisticCtx, {
+    plugins: [ChartDataLabels],
+    type: `horizontalBar`,
+    data: {
+      labels: uniqueGenres,
+      datasets: [{
+        data: filmsByGenreCounts,
+        backgroundColor: `#ffe800`,
+        hoverBackgroundColor: `#ffe800`,
+        anchor: `start`
+      }]
+    },
+    options: {
+      plugins: {
+        datalabels: {
+          font: {
+            size: 20
+          },
+          color: `#ffffff`,
+          anchor: `start`,
+          align: `start`,
+          offset: 40,
+        }
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            fontColor: `#ffffff`,
+            padding: 100,
+            fontSize: 20
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false
+          },
+          barThickness: 24
+        }],
+        xAxes: [{
+          ticks: {
+            display: false,
+            beginAtZero: true
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false
+          },
+        }],
+      },
+      legend: {
+        display: false
+      },
+      tooltips: {
+        enabled: false
+      }
+    }
+  });
+};
 
 
 const createTotalDurationTemplate = (watchedFilms) => {
@@ -21,13 +93,11 @@ const createTopGenreTemplate = (watchedFilms) => {
     watchedGenres.push(...film.genres);
   });
 
-  const uniqueGenres = makeItemsUnique(watchedGenres);
-  const filmsByGenreCounts = uniqueGenres.map((genre) => countFilmsByGenre(watchedGenres, genre));
-  const index = filmsByGenreCounts.findIndex((item) => item === Math.max(...filmsByGenreCounts));
+  const uniqueGenres = getSortedUniqueGenres(watchedGenres);
 
   return `<li class="statistic__text-item">
     <h4 class="statistic__item-title">Top genre</h4>
-    <p class="statistic__item-text">${uniqueGenres[index]}</p>
+    <p class="statistic__item-text">${uniqueGenres[0]}</p>
   </li>`;
 };
 
@@ -36,9 +106,7 @@ const createStatisticsTemplate = (data, currentPeriod) => {
   const {watchedFilms, dateFrom, dateTo} = data;
   const rank = getProfileRank(watchedFilms);
 
-  const watchedFilmsInPeriod = (dateFrom !== null)
-    ? getFilmsWatchedInPeriod(watchedFilms, dateFrom, dateTo)
-    : watchedFilms;
+  const watchedFilmsInPeriod = getFilmsWatchedInPeriod(watchedFilms, dateFrom, dateTo);
 
   return `<section class="statistic">
         <p class="statistic__rank">
@@ -96,15 +164,16 @@ export default class Statistics extends SmartView {
       dateTo: dayjs(),
     };
 
+    this._genresChart = null;
     this._currentPeriod = Period.ALL_TIME;
     this._periodChangeHandler = this._periodChangeHandler.bind(this);
   }
 
-  updateWatchedFilms(films, date = null) {
+  setWatchedFilms(films) {
     this.updateData({
       watchedFilms: films.filter((film) => film.isWatched),
-      dateFrom: date,
     });
+    this._setCharts();
   }
 
   getTemplate() {
@@ -113,14 +182,15 @@ export default class Statistics extends SmartView {
 
   restoreHandlers() {
     this._setInnerHandlers();
+    this._setCharts();
   }
 
   _periodChangeHandler(evt) {
-    const option = evt.target.value;
+    const period = evt.target.value;
+    this._currentPeriod = period;
     evt.preventDefault();
-    this._currentPeriod = option;
 
-    switch (option) {
+    switch (period) {
       case Period.ALL_TIME:
         this.updateData({dateFrom: null});
         break;
@@ -146,5 +216,14 @@ export default class Statistics extends SmartView {
     }
   }
 
+  _setCharts() {
+    if (this._genresChart !== null) {
+      this._genresChart = null;
+    }
 
+    const {watchedFilms, dateFrom, dateTo} = this._data;
+    const statisticCtx = this.getElement().querySelector(`.statistic__chart`);
+
+    this._genresChart = renderChart(statisticCtx, watchedFilms, dateFrom, dateTo);
+  }
 }
