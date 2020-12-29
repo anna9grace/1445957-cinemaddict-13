@@ -1,25 +1,12 @@
 import Abstract from "./abstract.js";
+import {getProfileRank} from "../utils/statistics.js";
 
-const RankMinFilmsWatched = {
-  "1": `Novice`,
-  "11": `Fan`,
-  "21": `Movie Buff`,
-};
-
-const createProfileRankTemplate = (watchedFilms) => {
-  let profileRank = null;
-
-  Object.entries(RankMinFilmsWatched).forEach(([minCount, rank]) => {
-    if (watchedFilms.length >= +minCount) {
-      profileRank = rank;
-    }
-  });
-  return profileRank ? `<p class="profile__rating">${profileRank}</p>` : ``;
-};
 
 const createUserProfileTemplate = (films) => {
+  const rank = getProfileRank(films);
+
   return `<section class="header__profile profile">
-      ${createProfileRankTemplate(films)}
+      ${rank ? `<p class="profile__rating">${rank}</p>` : ``}
       <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
     </section>`;
 };

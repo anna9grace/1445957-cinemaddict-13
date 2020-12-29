@@ -24,3 +24,17 @@ export const FilterType = {
   HISTORY: `history`,
   FAVORITES: `favorites`,
 };
+
+export const RankMinFilmsWatched = {
+  "1": `Novice`,
+  "11": `Fan`,
+  "21": `Movie Buff`,
+};
+
+export const Period = {
+  ALL_TIME: `all-time`,
+  TODAY: `today`,
+  WEEK: `week`,
+  MONTH: `month`,
+  YEAR: `year`,
+};

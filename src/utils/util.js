@@ -12,6 +12,8 @@ export const getRandomArrayElement = (arr) => {
   return arr[randomIndex];
 };
 
+export const makeItemsUnique = (items) => [...new Set(items)];
+
 export const humanizeDuration = (duration) => {
   let durationInHours = duration.get(`hours`) !== 0 ? duration.get(`hours`) + `h ` : ``;
   return `${durationInHours}${duration.get(`minutes`)}m`;

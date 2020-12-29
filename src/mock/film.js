@@ -95,6 +95,10 @@ const generateGenres = () => {
     `Comedy`,
     `Mystery`,
     `Western`,
+    `Thriller`,
+    `Sci-Fi`,
+    `Horror`,
+    `Action`,
   ];
   return genres.slice(getRandomInteger(0, genres.length - 1));
 };
@@ -147,6 +151,7 @@ export const generateFilm = () => {
     description: generateDescription(),
     isInWatchlist: Boolean(getRandomInteger(0, 1)),
     isWatched: Boolean(getRandomInteger(0, 1)),
+    watchDate: dayjs().subtract(getRandomInteger(0, 50000), `minutes`).toDate(),
     isFavorite: Boolean(getRandomInteger(0, 1)),
     ageRating: `${0 + 2 * getRandomInteger(0, 9)}+`,
     comments: generateComments(filmId),

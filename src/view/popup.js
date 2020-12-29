@@ -221,9 +221,9 @@ export default class FilmPopup extends SmartView {
   }
 
   _setInnerHandlers() {
-    const emojiChosers = this.getElement().querySelectorAll(`.film-details__emoji-item`);
-    for (let choser of emojiChosers) {
-      choser.addEventListener(`click`, this._newEmojiChoseHandler);
+    const emojiChoosers = this.getElement().querySelectorAll(`.film-details__emoji-item`);
+    for (let chooser of emojiChoosers) {
+      chooser.addEventListener(`click`, this._newEmojiChoseHandler);
     }
     this.getElement()
       .querySelector(`.film-details__comment-input`)

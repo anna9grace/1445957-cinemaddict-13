@@ -42,11 +42,14 @@ const handleBoardToggle = (isMenuActive) => {
   switch (isMenuActive) {
     case false:
       moviesBoardPresenter.showFilmsBoard();
+      filterBoardPresenter.setFiltersInactive(false);
       statisticsComponent.hide();
       break;
     case true:
       moviesBoardPresenter.hideFilmsBoard();
+      filterBoardPresenter.setFiltersInactive(true);
       statisticsComponent.show();
+      statisticsComponent.updateWatchedFilms(filmsModel.getFilms());
       break;
   }
 };

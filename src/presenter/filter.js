@@ -14,6 +14,7 @@ export default class Filter {
     this._currentFilter = null;
     this._filterComponent = null;
     this._profileComponent = null;
+    this._isFiltersInactive = false;
 
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleFilterChange = this._handleFilterChange.bind(this);
@@ -42,12 +43,18 @@ export default class Filter {
     removeElement(prevFilterComponent);
   }
 
+  setFiltersInactive(isInactive) {
+    this._isFiltersInactive = isInactive;
+  }
+
+
   _handleModelEvent() {
     this.init();
   }
 
+
   _handleFilterChange(filterType) {
-    if (this._currentFilter === filterType) {
+    if (this._currentFilter === filterType || this._isFiltersInactive) {
       return;
     }
     this._filterModel.setFilter(UpdateType.MAJOR, filterType);
