@@ -1,7 +1,6 @@
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import {getRandomInteger, getRandomArrayElement} from "../utils/util.js";
-import {authors} from "../utils/constants.js";
 dayjs.extend(duration);
 
 const randomText = [
@@ -111,32 +110,18 @@ const generateDescription = () => {
   return description;
 };
 
-const generateComments = (filmId) => {
-  const emojies = [`smile`, `sleeping`, `puke`, `angry`];
-  const commentsNumber = getRandomInteger(0, 5);
-  if (commentsNumber === 0) {
-    return [];
-  }
-  let id = -1;
-  return new Array(commentsNumber).fill().map(() => {
-    id++;
-    return {
-      id: filmId + id.toString(),
-      text: getRandomArrayElement(randomText),
-      emoji: getRandomArrayElement(emojies),
-      author: getRandomArrayElement(authors),
-      date: dayjs().subtract(getRandomInteger(0, 50000), `minutes`).toDate(),
-    };
-  });
-};
-
 const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 export const generateFilm = () => {
-  const filmId = generateId();
+  const commentsNumber = getRandomInteger(0, 5);
+  let comments = [];
+
+  for (let i = 0; i < commentsNumber; i++) {
+    comments.push(generateId());
+  }
 
   return {
-    id: filmId,
+    id: generateId(),
     name: generateName(),
     originalName: generateName(),
     poster: generatePoster(),
@@ -154,7 +139,7 @@ export const generateFilm = () => {
     watchDate: dayjs().subtract(getRandomInteger(0, 50000), `minutes`).toDate(),
     isFavorite: Boolean(getRandomInteger(0, 1)),
     ageRating: `${0 + 2 * getRandomInteger(0, 9)}+`,
-    comments: generateComments(filmId),
+    commentsId: comments,
     newEmoji: null,
     newCommentText: ``,
   };

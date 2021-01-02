@@ -6,13 +6,14 @@ import dayjs from "dayjs";
 
 
 export default class Film {
-  constructor(filmListContainer, popupContainer, filmChange, previousPopupClose, commentsModel, currentFilter) {
+  constructor(filmListContainer, popupContainer, filmChange, previousPopupClose, commentsModel, currentFilter, api) {
     this._filmListContainer = filmListContainer;
     this._popupContainer = popupContainer;
     this._filmChange = filmChange;
     this._previousPopupClose = previousPopupClose;
     this._commentsModel = commentsModel;
     this._currentFilter = currentFilter;
+    this._api = api;
 
     this._filmComponent = null;
     this._filmPopupComponent = null;
@@ -68,8 +69,9 @@ export default class Film {
   }
 
   _renderPopup(film) {
-    const comments = this._commentsModel.getComments(film);
     this._previousPopupClose();
+    const comments = this._commentsModel.getComments();
+
     this._filmPopupComponent = new FilmPopupView(film, comments);
     changePageOverflow();
 
@@ -92,7 +94,15 @@ export default class Film {
   }
 
   _handlePopupOpen(film) {
-    this._renderPopup(film);
+    this._api.getComments(film).then((comments) => {
+      this._commentsModel.setComments(comments);
+    })
+    .then(() => {
+      this._renderPopup(film);
+    });
+    // .catch(() => {
+    //   filmsModel.setFilms(UpdateType.INIT, []);
+    // });
   }
 
   _handlePopupClose() {
@@ -135,7 +145,7 @@ export default class Film {
     this._filmChange(
         UserAction.DELETE_COMMENT,
         UpdateType.PATCH,
-        Object.assign({}, this._film, {comments: commentId})
+        Object.assign({}, {film: this._film}, {comment: commentId})
     );
   }
 
@@ -143,7 +153,7 @@ export default class Film {
     this._filmChange(
         UserAction.ADD_COMMENT,
         UpdateType.PATCH,
-        Object.assign({}, this._film, {comments: newComment})
+        Object.assign({}, {film: this._film}, {comment: newComment})
     );
   }
 }
