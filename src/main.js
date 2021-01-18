@@ -1,8 +1,9 @@
-import UserProfileView from "./view/user-profile.js";
-import FooterStatsView from "./view/stats.js";
+import NavigationView from "./view/navigation.js";
+import FooterStatsView from "./view/short-stats.js";
+import StatisticsView from "./view/statistics.js";
 import {generateFilm} from "./mock/film.js";
-import {getWatchedFilms} from "./utils/util.js";
 import {RenderPosition, render} from "./utils/render.js";
+import {MenuItem} from "./utils/constants.js";
 import MovieBoardPresenter from "./presenter/moviesBoard.js";
 import FilterBoardPresenter from "./presenter/filter.js";
 import FilmsModel from "./model/films.js";
@@ -23,13 +24,37 @@ const filterModel = new FilterModel();
 filmsModel.setFilms(filmsCollection);
 commentsModel.setComments(filmsCollection);
 
+const navigationComponent = new NavigationView();
 
-const watchedFilmsCount = getWatchedFilms(filmsCollection);
 
 const moviesBoardPresenter = new MovieBoardPresenter(pageMainElement, footerElement, filmsModel, filterModel, commentsModel);
-const filterBoardPresenter = new FilterBoardPresenter(pageMainElement, filmsModel, filterModel);
+const filterBoardPresenter = new FilterBoardPresenter(navigationComponent, pageHeaderElement, filmsModel, filterModel);
 
-render(pageHeaderElement, RenderPosition.BEFOREEND, new UserProfileView(watchedFilmsCount));
+render(pageMainElement, RenderPosition.BEFOREEND, navigationComponent);
+
 filterBoardPresenter.init();
 moviesBoardPresenter.init();
+
+const statisticsComponent = new StatisticsView();
+render(pageMainElement, RenderPosition.BEFOREEND, statisticsComponent);
 render(statsElement, RenderPosition.BEFOREEND, new FooterStatsView());
+
+
+const handleMenuClick = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.FILMS:
+      moviesBoardPresenter.showFilmsBoard();
+      statisticsComponent.hide();
+      break;
+    case MenuItem.STATISTICS:
+      moviesBoardPresenter.hideFilmsBoard();
+      filterBoardPresenter.resetFilter();
+      statisticsComponent.show();
+      statisticsComponent.setWatchedFilms(filmsModel.getFilms());
+      break;
+  }
+};
+
+
+navigationComponent.setMenuClickHandler(handleMenuClick);
+statisticsComponent.hide();

@@ -2,6 +2,7 @@ import FilmCardView from "../view/film-card.js";
 import FilmPopupView from "../view/popup.js";
 import {UserAction, UpdateType, FilterType} from "../utils/constants.js";
 import {RenderPosition, render, removeElement, replace, changePageOverflow} from "../utils/render.js";
+import dayjs from "dayjs";
 
 
 export default class Film {
@@ -112,7 +113,12 @@ export default class Film {
     this._filmChange(
         UserAction.UPDATE_FILM,
         isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
-        Object.assign({}, this._film, {isWatched: !this._film.isWatched})
+        Object.assign(
+            {},
+            this._film,
+            {isWatched: !this._film.isWatched,
+              watchDate: !this._film.isWatched ? dayjs().toDate() : null}
+        )
     );
   }
 

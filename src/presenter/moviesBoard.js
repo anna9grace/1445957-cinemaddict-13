@@ -55,20 +55,15 @@ export default class moviesBoard {
     this._renderFilmsBoard();
   }
 
-
-  destroy() {
-    this._clearBoard({resetRenderedFilmsCount: true, resetSortType: true});
-
-    removeElement(this._filmsBlockComponent);
-    removeElement(this._filmsListComponent);
-    removeElement(this._topRatedComponent);
-    removeElement(this._topCommentedComponent);
-
-    this._filmsModel.removeObserver(this._handleModelEvent);
-    this._filterModel.removeObserver(this._handleModelEvent);
-    this._commentsModel.removeObserver(this._handleModelEvent);
+  hideFilmsBoard() {
+    this._sortComponent.hide();
+    this._filmsBlockComponent.hide();
   }
 
+  showFilmsBoard() {
+    this._sortComponent.show();
+    this._filmsBlockComponent.show();
+  }
 
   _getFilms() {
     const filterType = this._filterModel.getFilter();
@@ -109,7 +104,7 @@ export default class moviesBoard {
         this._renderFilmsBoard();
         break;
       case UpdateType.MAJOR:
-        this._clearBoard({resetRenderedFilmsCount: true, resetSortType: true});
+        this._clearBoard({resetRenderedFilmCount: true, resetSortType: true});
         this._renderFilmsBoard();
         break;
     }

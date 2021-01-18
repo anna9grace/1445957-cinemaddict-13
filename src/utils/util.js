@@ -12,17 +12,15 @@ export const getRandomArrayElement = (arr) => {
   return arr[randomIndex];
 };
 
-export const humanizeFilmDuration = (duration) => {
+export const makeItemsUnique = (items) => [...new Set(items)];
+
+export const humanizeDuration = (duration) => {
   let durationInHours = duration.get(`hours`) !== 0 ? duration.get(`hours`) + `h ` : ``;
   return `${durationInHours}${duration.get(`minutes`)}m`;
 };
 
 export const humanizeDate = (date, format) => {
   return dayjs(date).format(format);
-};
-
-export const getWatchedFilms = (films) => {
-  return films.filter((film) => film.isWatched).length;
 };
 
 export const updateItem = (items, update) => {
