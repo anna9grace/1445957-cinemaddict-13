@@ -56,7 +56,6 @@ export default class moviesBoard {
   }
 
   hideFilmsBoard() {
-    this._clearBoard({resetRenderedFilmCount: true, resetSortType: true});
     this._sortComponent.hide();
     this._filmsBlockComponent.hide();
   }
@@ -64,7 +63,6 @@ export default class moviesBoard {
   showFilmsBoard() {
     this._sortComponent.show();
     this._filmsBlockComponent.show();
-    this._renderFilmsBoard();
   }
 
   _getFilms() {

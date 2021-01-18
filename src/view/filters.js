@@ -1,4 +1,5 @@
 import AbstractView from "./abstract.js";
+import {MenuItem} from "../utils/constants.js";
 
 const createFilmsCountTemplate = (count) => {
   return `<span class="main-navigation__item-count">${count}</span>`;
@@ -7,9 +8,10 @@ const createFilmsCountTemplate = (count) => {
 const createFilterTemplate = (filter, currentFilterType) => {
   const {type, name, count} = filter;
   return (
-    `<a href="#${type}" 
+    `<a href="#${type}"
       class="main-navigation__item ${currentFilterType === type ? `main-navigation__item--active` : ``}"
-      data-filter-type="${type}">
+      data-filter-type="${type}"
+      data-menu-item="${MenuItem.FILMS}">
       ${name}
       ${type !== `all` ? createFilmsCountTemplate(count) : ``}
     </a>`

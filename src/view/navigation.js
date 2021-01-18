@@ -1,8 +1,9 @@
 import AbstractView from "./abstract.js";
+import {MenuItem} from "../utils/constants.js";
 
 const createNavigationTemplate = () => {
   return `<nav class="main-navigation">
-          <a href="#stats" class="main-navigation__additional">Stats</a>
+          <a href="#stats" class="main-navigation__additional" data-menu-item="${MenuItem.STATISTICS}">Stats</a>
       </nav>`;
 };
 
@@ -11,31 +12,42 @@ export default class Navigation extends AbstractView {
   constructor() {
     super();
     this._menuClickHandler = this._menuClickHandler.bind(this);
-    this._isMenuActivate = false;
   }
 
   getTemplate() {
     return createNavigationTemplate();
   }
 
+
   _menuClickHandler(evt) {
+    const target = evt.target;
+    if (target.tagName !== `A`) {
+      return;
+    }
     evt.preventDefault();
-    this._changeMenuState();
-    this._callback.click(this._isMenuActivate);
+    this._callback.menuClick(target.dataset.menuItem);
+    this._changeMenuState(target);
   }
 
 
   setMenuClickHandler(callback) {
-    this._callback.click = callback;
-    this.getElement()
-      .querySelector(`.main-navigation__additional`)
-      .addEventListener(`click`, this._menuClickHandler);
+    this._callback.menuClick = callback;
+    this.getElement().addEventListener(`click`, this._menuClickHandler);
   }
 
-  _changeMenuState() {
-    const button = this.getElement().querySelector(`.main-navigation__additional`);
 
-    button.classList.toggle(`main-navigation__additional--active`);
-    this._isMenuActivate = button.classList.contains(`main-navigation__additional--active`);
+  _changeMenuState(target) {
+    const activeItem = this.getElement().querySelector(`.main-navigation__item--active`);
+    const activeAdditionalItem = this.getElement().querySelector(`.main-navigation__additional--active`);
+
+    if (target.dataset.menuItem === MenuItem.STATISTICS && activeItem) {
+      activeItem.classList.remove(`main-navigation__item--active`);
+      target.classList.add(`main-navigation__additional--active`);
+      return;
+    }
+
+    if (activeAdditionalItem) {
+      activeAdditionalItem.classList.remove(`main-navigation__additional--active`);
+    }
   }
 }

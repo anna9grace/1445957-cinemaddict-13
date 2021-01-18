@@ -38,3 +38,8 @@ export const Period = {
   MONTH: `month`,
   YEAR: `year`,
 };
+
+export const MenuItem = {
+  FILMS: `films`,
+  STATISTICS: `statistics`
+};

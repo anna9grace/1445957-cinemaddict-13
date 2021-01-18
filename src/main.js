@@ -3,6 +3,7 @@ import FooterStatsView from "./view/short-stats.js";
 import StatisticsView from "./view/statistics.js";
 import {generateFilm} from "./mock/film.js";
 import {RenderPosition, render} from "./utils/render.js";
+import {MenuItem} from "./utils/constants.js";
 import MovieBoardPresenter from "./presenter/moviesBoard.js";
 import FilterBoardPresenter from "./presenter/filter.js";
 import FilmsModel from "./model/films.js";
@@ -25,6 +26,7 @@ commentsModel.setComments(filmsCollection);
 
 const navigationComponent = new NavigationView();
 
+
 const moviesBoardPresenter = new MovieBoardPresenter(pageMainElement, footerElement, filmsModel, filterModel, commentsModel);
 const filterBoardPresenter = new FilterBoardPresenter(navigationComponent, pageHeaderElement, filmsModel, filterModel);
 
@@ -38,21 +40,21 @@ render(pageMainElement, RenderPosition.BEFOREEND, statisticsComponent);
 render(statsElement, RenderPosition.BEFOREEND, new FooterStatsView());
 
 
-const handleBoardToggle = (isMenuActive) => {
-  switch (isMenuActive) {
-    case false:
+const handleMenuClick = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.FILMS:
       moviesBoardPresenter.showFilmsBoard();
-      filterBoardPresenter.setFiltersInactive(false);
       statisticsComponent.hide();
       break;
-    case true:
+    case MenuItem.STATISTICS:
       moviesBoardPresenter.hideFilmsBoard();
-      filterBoardPresenter.setFiltersInactive(true);
+      filterBoardPresenter.resetFilter();
       statisticsComponent.show();
       statisticsComponent.setWatchedFilms(filmsModel.getFilms());
       break;
   }
 };
 
-navigationComponent.setMenuClickHandler(handleBoardToggle);
+
+navigationComponent.setMenuClickHandler(handleMenuClick);
 statisticsComponent.hide();
