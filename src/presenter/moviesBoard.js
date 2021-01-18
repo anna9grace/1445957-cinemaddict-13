@@ -2,6 +2,7 @@ import FilmsBlockView from "../view/films-block.js";
 import SortView from "../view/sort.js";
 import FilmsListView from "../view/films-list.js";
 import NoFilmsView from "../view/no-films.js";
+import LoadingView from "../view/loading.js";
 import TopRatedListView from "../view/top-rated-films.js";
 import TopCommentedListView from "../view/top-commented-films.js";
 import LoadMoreButtonView from "../view/show-more.js";
@@ -17,22 +18,25 @@ const TOP_FILMS_COUNT = 2;
 
 
 export default class moviesBoard {
-  constructor(filmsContainer, popupContainer, filmsModel, filterModel, commentsModel) {
+  constructor(filmsContainer, popupContainer, filmsModel, filterModel, commentsModel, api) {
     this._filmsContainer = filmsContainer;
     this._popupContainer = popupContainer;
     this._filmsModel = filmsModel;
     this._filterModel = filterModel;
     this._commentsModel = commentsModel;
+    this._api = api;
 
     this._renderedFilmsCount = FILMS_COUNT_PER_STEP;
     this._filmPresenters = {};
     this._filmRatedPresenters = {};
     this._filmCommentedPresenters = {};
     this._currentSortType = SortType.DEFAULT;
+    this._isLoading = true;
 
     this._filmsBlockComponent = new FilmsBlockView();
     this._filmsListComponent = new FilmsListView();
     this._noFilmsComponent = new NoFilmsView();
+    this._loadingComponent = new LoadingView();
     this._topRatedComponent = new TopRatedListView();
     this._topCommentedComponent = new TopCommentedListView();
     this._loadMoreComponent = null;
@@ -107,13 +111,18 @@ export default class moviesBoard {
         this._clearBoard({resetRenderedFilmCount: true, resetSortType: true});
         this._renderFilmsBoard();
         break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        removeElement(this._loadingComponent);
+        this._renderFilmsBoard();
+        break;
     }
   }
 
 
   _renderFilm(film, filmsList, presenters) {
     const currentFilter = this._filterModel.getFilter();
-    const filmPresenter = new FilmPresenter(filmsList, this._popupContainer, this._handleViewAction, this._handlePopupChange, this._commentsModel, currentFilter);
+    const filmPresenter = new FilmPresenter(filmsList, this._popupContainer, this._handleViewAction, this._handlePopupChange, this._commentsModel, currentFilter, this._api);
     filmPresenter.init(film);
     presenters[film.id] = filmPresenter;
   }
@@ -153,6 +162,11 @@ export default class moviesBoard {
 
   _renderNoFilms() {
     render(this._filmsBlockComponent, RenderPosition.BEFOREEND, this._noFilmsComponent);
+  }
+
+
+  _renderLoading() {
+    render(this._filmsBlockComponent, RenderPosition.BEFOREEND, this._loadingComponent);
   }
 
 
@@ -257,6 +271,7 @@ export default class moviesBoard {
     removeElement(this._loadMoreComponent);
     removeElement(this._sortComponent);
     removeElement(this._noFilmsComponent);
+    removeElement(this._loadingComponent);
 
     if (resetRenderedFilmCount) {
       this._renderedFilmsCount = FILMS_COUNT_PER_STEP;
@@ -271,6 +286,11 @@ export default class moviesBoard {
 
 
   _renderFilmsBoard() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
     const films = this._getFilms();
     if (films.length === 0) {
       this._renderNoFilms();
