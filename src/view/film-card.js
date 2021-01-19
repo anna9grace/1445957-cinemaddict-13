@@ -7,11 +7,10 @@ const renderControlsState = (controlsState) => {
   return (controlsState) ? `film-card__controls-item--active` : ``;
 };
 
-const createFilmCardTemplate = (film, comments) => {
-  const {name, poster, rating, releaseDate, duration, genres, description, isInWatchlist, isWatched,
+const createFilmCardTemplate = (film) => {
+  const {name, poster, rating, releaseDate, duration, genres, description, commentsId, isInWatchlist, isWatched,
     isFavorite} = film;
 
-  const commentsCount = (comments === null) ? 0 : comments.length;
   const shortDescription = (description.length > MAX_DESCRIPTION_LENGTH)
     ? description.substr(0, MAX_DESCRIPTION_LENGTH - 2) + `...`
     : description;
@@ -26,7 +25,7 @@ const createFilmCardTemplate = (film, comments) => {
     </p>
     <img src="${poster}" alt="${name}" class="film-card__poster">
     <p class="film-card__description">${shortDescription}</p>
-    <a class="film-card__comments">${commentsCount} comments</a>
+    <a class="film-card__comments">${commentsId.length} comments</a>
     <div class="film-card__controls">
       <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${renderControlsState(isInWatchlist)}" type="button">Add to watchlist</button>
       <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${renderControlsState(isWatched)}" type="button">Mark as watched</button>

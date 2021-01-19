@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 
 const sortByComments = (films) => {
-  return films.sort((a, b) => a.comments.length < b.comments.length ? 1 : -1);
+  return films.sort((a, b) => a.commentsId.length < b.commentsId.length ? 1 : -1);
 };
 
 export const sortByRating = (films) => {
@@ -13,7 +13,7 @@ export const sortByDate = (films) => {
 };
 
 export const getTopCommentedFilms = (films) => {
-  const commentedFilms = films.filter((film) => film.comments.length > 0);
+  const commentedFilms = films.filter((film) => film.commentsId.length > 0);
   return sortByComments(commentedFilms);
 };
 

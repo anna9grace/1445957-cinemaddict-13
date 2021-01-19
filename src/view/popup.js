@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 
+const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 const renderControlsState = (controlsState) => {
   return (controlsState) ? `checked` : ``;
@@ -43,7 +44,7 @@ const createCommentTemplate = (comment) => {
 const createPopupCommentsTemplate = (comments) => {
   let commentsList = [];
   if (comments) {
-    commentsList = comments.map((element) => createCommentTemplate(element));
+    commentsList = comments.map((item) => createCommentTemplate(item));
   }
 
   return `<h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsList.length}</span></h3>
@@ -53,34 +54,37 @@ const createPopupCommentsTemplate = (comments) => {
 };
 
 const createPopupCommentsBlockTemplate = (comments, newEmoji, newCommentText) => {
-  return `<section class="film-details__comments-wrap">
 
-  ${createPopupCommentsTemplate(comments)}
+
+  return `<section class="film-details__comments-wrap">
+    ${comments === null
+    ? `<h3 class="film-details__comments-title">Comments has not been loaded</h3>`
+    : createPopupCommentsTemplate(comments)}
 
   <div class="film-details__new-comment">
     <div class="film-details__add-emoji-label">${newEmoji ? renderEmoji(newEmoji) : ``}</div>
 
     <label class="film-details__comment-label">
-      <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${newCommentText}</textarea>
+      <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${comments === null ? `disabled` : ``}>${newCommentText}</textarea>
     </label>
 
     <div class="film-details__emoji-list">
-      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${newEmoji === `smile` ? `checked` : ``}>
+      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${newEmoji === `smile` ? `checked` : ``} ${comments === null ? `disabled` : ``}>
       <label class="film-details__emoji-label" for="emoji-smile">
         <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
       </label>
 
-      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${newEmoji === `sleeping` ? `checked` : ``}>
+      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${newEmoji === `sleeping` ? `checked` : ``} ${comments === null ? `disabled` : ``}>
       <label class="film-details__emoji-label" for="emoji-sleeping">
         <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
       </label>
 
-      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${newEmoji === `puke` ? `checked` : ``}>
+      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${newEmoji === `puke` ? `checked` : ``} ${comments === null ? `disabled` : ``}>
       <label class="film-details__emoji-label" for="emoji-puke">
         <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
       </label>
 
-      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${newEmoji === `angry` ? `checked` : ``}>
+      <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${newEmoji === `angry` ? `checked` : ``} ${comments === null ? `disabled` : ``}>
       <label class="film-details__emoji-label" for="emoji-angry">
         <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
       </label>
@@ -166,7 +170,7 @@ const createPopupTemplate = (data) => {
       </div>
 
       <div class="film-details__bottom-container">
-        ${createPopupCommentsBlockTemplate(comments, newEmoji, newCommentText)}
+      ${createPopupCommentsBlockTemplate(comments, newEmoji, newCommentText)}
       </div>
     </form>
   </section>`;
@@ -174,9 +178,9 @@ const createPopupTemplate = (data) => {
 
 
 export default class FilmPopup extends SmartView {
-  constructor(film, comments) {
+  constructor(film, filmComments) {
     super();
-    this._data = Object.assign({}, film, {comments});
+    this._data = Object.assign({}, film, {comments: filmComments});
     this._clickHandler = this._clickHandler.bind(this);
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
     this._watchedClickHandler = this._watchedClickHandler.bind(this);
@@ -238,7 +242,7 @@ export default class FilmPopup extends SmartView {
 
   _deleteCommentHandler(evt) {
     evt.preventDefault();
-    const commentId = evt.target.closest(`.film-details__comment`).dataset.commentId;
+    const commentId = +evt.target.closest(`.film-details__comment`).dataset.commentId;
     const index = this._data.comments.findIndex((comment) => comment.id === commentId);
 
     this.updateData({
@@ -255,11 +259,10 @@ export default class FilmPopup extends SmartView {
       evt.preventDefault();
       const emojiField = this.getElement().querySelector(`.film-details__add-emoji-label img`);
       const textField = this.getElement().querySelector(`.film-details__comment-input`);
-      const commentsList = this.getElement().querySelectorAll(`.film-details__comment`);
 
       if (textField.value && emojiField) {
         const newComment = {
-          id: this._data.id + commentsList.length.toString(),
+          id: generateId(),
           text: textField.value,
           emoji: emojiField.dataset.emotion,
           author: getRandomArrayElement(authors),
