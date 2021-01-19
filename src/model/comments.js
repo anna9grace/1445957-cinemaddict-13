@@ -10,7 +10,7 @@ export default class Comments extends Observer {
     // const idCollection = [];
     // commentsIds.forEach((ids) => idCollection.push(...ids));
     // idCollection.forEach((id) => this._comments.push(generateComments(id)));
-    this._comments = comments.slice();
+    this._comments = (comments === null) ? comments : comments.slice();
   }
 
   getComments() {

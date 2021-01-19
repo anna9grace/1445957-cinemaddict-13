@@ -87,7 +87,10 @@ export default class moviesBoard {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-        this._filmsModel.updateFilm(updateType, update);
+        this._api.updateFilm(update)
+          .then((response) => {
+            this._filmsModel.updateFilm(updateType, response);
+          });
         break;
       case UserAction.ADD_COMMENT:
         this._commentsModel.addComment(updateType, update);
@@ -97,6 +100,7 @@ export default class moviesBoard {
         break;
     }
   }
+
 
   _handleModelEvent(updateType, data) {
     switch (updateType) {

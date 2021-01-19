@@ -40,6 +40,7 @@ export default class Api {
         .then(FilmsModel.adaptToClient);
   }
 
+
   _load({
     url,
     method = Method.GET,
@@ -56,16 +57,18 @@ export default class Api {
         .catch(Api.catchError);
   }
 
+
   static checkStatus(response) {
     if (
       response.status < SuccessHTTPStatusRange.MIN ||
-        response.status >= SuccessHTTPStatusRange.MAX
+      response.status >= SuccessHTTPStatusRange.MAX
     ) {
       throw new Error(`${response.status}: ${response.statusText}`);
     }
 
     return response;
   }
+
 
   static toJSON(response) {
     return response.json();

@@ -1,7 +1,6 @@
 import NavigationView from "./view/navigation.js";
 import FooterStatsView from "./view/short-stats.js";
 import StatisticsView from "./view/statistics.js";
-// import {generateFilm} from "./mock/film.js";
 import {RenderPosition, render} from "./utils/render.js";
 import {MenuItem, UpdateType} from "./utils/constants.js";
 import MovieBoardPresenter from "./presenter/moviesBoard.js";
@@ -11,7 +10,6 @@ import FilterModel from "./model/filters.js";
 import CommentsModel from "./model/comments.js";
 import Api from "./api.js";
 
-// const MOCK_FILMS_COUNT = 22;
 const AUTHORIZATION = `Basic afaifjwio4335l`;
 const END_POINT = `https://13.ecmascript.pages.academy/cinemaddict/`;
 
@@ -20,8 +18,6 @@ const pageMainElement = document.querySelector(`.main`);
 const statsElement = document.querySelector(`.footer__statistics`);
 const footerElement = document.querySelector(`.footer`);
 
-// const filmsCollection = new Array(MOCK_FILMS_COUNT).fill().map(generateFilm);
-// console.log(filmsCollection);
 const api = new Api(END_POINT, AUTHORIZATION);
 
 const filmsModel = new FilmsModel();

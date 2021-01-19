@@ -21,7 +21,6 @@ export default class Films extends Observer {
 
   updateFilm(updateType, update) {
     const index = this._films.findIndex((film) => film.id === update.id);
-
     if (index === -1) {
       throw new Error(`Can't update unexisting task`);
     }
@@ -90,7 +89,7 @@ export default class Films extends Observer {
               "date": film.releaseDate.toISOString(),
               "release_country": film.country
             },
-            "runtime": parseInt(dayjs.duration(film.duration).as(`minutes`), 10),
+            "runtime": film.duration.as(`minutes`),
             "genre": film.genres,
             "description": film.description,
           },

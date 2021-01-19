@@ -98,10 +98,11 @@ export default class Film {
     })
     .then(() => {
       this._renderPopup(film);
+    })
+    .catch(() => {
+      this._commentsModel.setComments(null);
+      this._renderPopup(film);
     });
-    // .catch(() => {
-    //   filmsModel.setFilms(UpdateType.INIT, []);
-    // });
   }
 
   _handlePopupClose() {
@@ -126,7 +127,7 @@ export default class Film {
             {},
             this._film,
             {isWatched: !this._film.isWatched,
-              watchDate: !this._film.isWatched ? dayjs().toDate() : null}
+              watchDate: !this._film.isWatched ? dayjs().toDate() : dayjs(0).toDate()}
         )
     );
   }
