@@ -32,6 +32,7 @@ export default class moviesBoard {
     this._filmCommentedPresenters = {};
     this._currentSortType = SortType.DEFAULT;
     this._isLoading = true;
+    this._isPopupReopening = false;
 
     this._filmsBlockComponent = new FilmsBlockView();
     this._filmsListComponent = new FilmsListView();
@@ -93,10 +94,15 @@ export default class moviesBoard {
           });
         break;
       case UserAction.ADD_COMMENT:
-        this._commentsModel.addComment(updateType, update);
+        this._api.addComment(update).then((response) => {
+          this._isPopupReopening = true;
+          this._commentsModel.addComment(updateType, response);
+        });
         break;
       case UserAction.DELETE_COMMENT:
-        this._commentsModel.deleteComment(updateType, update);
+        this._api.deleteComment(update).then(() => {
+          this._commentsModel.deleteComment(updateType, update);
+        });
         break;
     }
   }
@@ -132,16 +138,22 @@ export default class moviesBoard {
   }
 
 
+  _updateFilmCard(film, presenters) {
+    if (presenters[film.id]) {
+      const updatedFilm = presenters[film.id];
+      updatedFilm.init(film);
+
+      if (this._isPopupReopening) {
+        updatedFilm.handlePopupOpen(film, true);
+        this._isPopupReopening = false;
+      }
+    }
+  }
+
   _updateFilm(film) {
-    if (this._filmPresenters[film.id]) {
-      this._filmPresenters[film.id].init(film);
-    }
-    if (this._filmRatedPresenters[film.id]) {
-      this._filmRatedPresenters[film.id].init(film);
-    }
-    if (this._filmCommentedPresenters[film.id]) {
-      this._filmCommentedPresenters[film.id].init(film);
-    }
+    this._updateFilmCard(film, this._filmPresenters);
+    this._updateFilmCard(film, this._filmRatedPresenters);
+    this._updateFilmCard(film, this._filmCommentedPresenters);
   }
 
 

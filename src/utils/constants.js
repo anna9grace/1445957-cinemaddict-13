@@ -1,5 +1,3 @@
-export const authors = [`John Doe`, `Tim Macoveev`, `Joe Black`, `John Smith`];
-
 export const SortType = {
   DEFAULT: `default`,
   BY_DATE: `by-date`,

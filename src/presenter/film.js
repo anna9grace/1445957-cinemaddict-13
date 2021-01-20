@@ -22,7 +22,7 @@ export default class Film {
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
-    this._handlePopupOpen = this._handlePopupOpen.bind(this);
+    this.handlePopupOpen = this.handlePopupOpen.bind(this);
     this._handlePopupClose = this._handlePopupClose.bind(this);
     this._handleCommentDeletion = this._handleCommentDeletion.bind(this);
     this._handleCommentAddition = this._handleCommentAddition.bind(this);
@@ -37,7 +37,7 @@ export default class Film {
     this._filmComponent = new FilmCardView(film, comments);
 
     this._filmComponent.setClickHandler(() => {
-      this._handlePopupOpen(film);
+      this.handlePopupOpen(film);
     });
     this._filmComponent.setWatchlistClickHandler(this._handleWatchlistClick);
     this._filmComponent.setWatchedClickHandler(this._handleWatchedClick);
@@ -68,7 +68,10 @@ export default class Film {
     }
   }
 
-  _renderPopup(film) {
+
+  _renderPopup(film, isPositionSave) {
+    const scroll = isPositionSave ? this._filmPopupComponent.getScroll() : 0;
+
     this._previousPopupClose();
     const comments = this._commentsModel.getComments();
     this._filmPopupComponent = new FilmPopupView(film, comments);
@@ -82,6 +85,7 @@ export default class Film {
     this._filmPopupComponent.setCommentDeleteHandler(this._handleCommentDeletion);
     this._filmPopupComponent.setCommentAddHandler(this._handleCommentAddition);
     render(this._popupContainer, RenderPosition.AFTEREND, this._filmPopupComponent);
+    this._filmPopupComponent.applyScroll(scroll);
   }
 
 
@@ -92,16 +96,16 @@ export default class Film {
     }
   }
 
-  _handlePopupOpen(film) {
+  handlePopupOpen(film, isPositionSave) {
     this._api.getComments(film).then((comments) => {
       this._commentsModel.setComments(comments);
     })
     .then(() => {
-      this._renderPopup(film);
+      this._renderPopup(film, isPositionSave);
     })
     .catch(() => {
       this._commentsModel.setComments(null);
-      this._renderPopup(film);
+      this._renderPopup(film, isPositionSave);
     });
   }
 
@@ -153,7 +157,8 @@ export default class Film {
     this._filmChange(
         UserAction.ADD_COMMENT,
         UpdateType.PATCH,
-        Object.assign({}, {film: this._film}, {comment: newComment})
+        Object.assign({}, {film: this._film}, {comment: newComment}),
+        true
     );
   }
 }

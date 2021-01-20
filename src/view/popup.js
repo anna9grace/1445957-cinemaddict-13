@@ -1,12 +1,10 @@
-import {humanizeDuration, humanizeDate, getRandomArrayElement} from "../utils/util.js";
-import {authors} from "../utils/constants.js";
+import {humanizeDuration, humanizeDate} from "../utils/util.js";
 import SmartView from "./smart.js";
 import he from "he";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 
-const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 const renderControlsState = (controlsState) => {
   return (controlsState) ? `checked` : ``;
@@ -242,7 +240,7 @@ export default class FilmPopup extends SmartView {
 
   _deleteCommentHandler(evt) {
     evt.preventDefault();
-    const commentId = +evt.target.closest(`.film-details__comment`).dataset.commentId;
+    const commentId = evt.target.closest(`.film-details__comment`).dataset.commentId;
     const index = this._data.comments.findIndex((comment) => comment.id === commentId);
 
     this.updateData({
@@ -262,18 +260,10 @@ export default class FilmPopup extends SmartView {
 
       if (textField.value && emojiField) {
         const newComment = {
-          id: generateId(),
           text: textField.value,
           emoji: emojiField.dataset.emotion,
-          author: getRandomArrayElement(authors),
           date: humanizeDate(dayjs(), `YYYY/MM/DD HH:mm`)
         };
-
-        this.updateData({
-          newEmoji: null,
-          newCommentText: ``,
-          comments: [...this._data.comments, newComment],
-        });
         this._callback.add(newComment);
       }
     }
