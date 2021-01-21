@@ -1,4 +1,5 @@
 import Observer from "../utils/observer.js";
+import dayjs from "dayjs";
 
 export default class Comments extends Observer {
   constructor() {
@@ -7,9 +8,6 @@ export default class Comments extends Observer {
   }
 
   setComments(comments) {
-    // const idCollection = [];
-    // commentsIds.forEach((ids) => idCollection.push(...ids));
-    // idCollection.forEach((id) => this._comments.push(generateComments(id)));
     this._comments = (comments === null) ? comments : comments.slice();
   }
 
@@ -19,13 +17,9 @@ export default class Comments extends Observer {
 
 
   addComment(updateType, update) {
-    const film = update.film;
-    const newComment = update.comment;
+    this._comments = update.comments.slice();
 
-    this._comments.push(newComment);
-    film.commentsId.push(newComment.id);
-
-    this._notify(updateType, film);
+    this._notify(updateType, update.film);
   }
 
 
@@ -66,7 +60,6 @@ export default class Comments extends Observer {
 
     delete adaptedComment.comment;
     delete adaptedComment.emotion;
-
     return adaptedComment;
   }
 
@@ -77,7 +70,7 @@ export default class Comments extends Observer {
         comment,
         {
           "comment": comment.text,
-          "date": comment.date.toISOString(),
+          "date": dayjs(comment.date).toISOString(),
           "emotion": comment.emoji,
         }
     );
