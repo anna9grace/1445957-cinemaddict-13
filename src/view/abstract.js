@@ -1,5 +1,7 @@
 import {createElement} from "../utils/render.js";
 
+const SHAKE_ANIMATION_TIMEOUT = 400;
+
 export default class Abstract {
   constructor() {
     if (new.target === Abstract) {
@@ -31,5 +33,15 @@ export default class Abstract {
 
   hide() {
     this.getElement().style.display = `none`;
+  }
+
+  shake(callback, element) {
+    const animatedElement = element ? element : this.getElement();
+
+    animatedElement.style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    setTimeout(() => {
+      animatedElement.style.animation = ``;
+      callback();
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 }

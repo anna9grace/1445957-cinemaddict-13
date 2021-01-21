@@ -4,6 +4,13 @@ import {UserAction, UpdateType, FilterType} from "../utils/constants.js";
 import {RenderPosition, render, removeElement, replace, changePageOverflow} from "../utils/render.js";
 import dayjs from "dayjs";
 
+export const State = {
+  SENDING: `SENDING`,
+  DELETING: `DELETING`,
+  DELETE_ABORTING: `DELETE_ABORTING`,
+  SEND_ABORTING: `SEND_ABORTING`,
+};
+
 
 export default class Film {
   constructor(filmListContainer, popupContainer, filmChange, previousPopupClose, commentsModel, currentFilter, api) {
@@ -16,7 +23,7 @@ export default class Film {
     this._api = api;
 
     this._filmComponent = null;
-    this._filmPopupComponent = null;
+    this.filmPopupComponent = null;
 
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
@@ -54,38 +61,69 @@ export default class Film {
 
   destroy() {
     removeElement(this._filmComponent);
-    if (this._filmPopupComponent !== null) {
+    if (this.filmPopupComponent !== null) {
       this.closePopup();
     }
   }
 
+  setViewState(state) {
+    const commentId = this.filmPopupComponent.currentCommentId;
+    const resetFormState = () => {
+      this.filmPopupComponent.currentCommentId = null;
+      this.filmPopupComponent.updateData({
+        isDisabled: false,
+        isDeleting: false,
+      });
+    };
+
+    switch (state) {
+      case State.SENDING:
+        this.filmPopupComponent.updateData({
+          isDisabled: true,
+        });
+        break;
+      case State.DELETING:
+        this.filmPopupComponent.updateData({
+          isDeleting: true
+        });
+        break;
+      case State.SEND_ABORTING:
+        this.filmPopupComponent.shake(resetFormState);
+        break;
+      case State.DELETE_ABORTING:
+        const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
+        this.filmPopupComponent.shake(resetFormState, commentElement);
+        break;
+    }
+  }
+
   closePopup() {
-    if (this._filmPopupComponent !== null) {
-      removeElement(this._filmPopupComponent);
+    if (this.filmPopupComponent !== null) {
+      removeElement(this.filmPopupComponent);
       document.removeEventListener(`keydown`, this._escKeyDownHandler);
-      this._filmPopupComponent = null;
+      this.filmPopupComponent = null;
       changePageOverflow();
     }
   }
 
 
   _renderPopup(film, isPositionSave) {
-    const scroll = isPositionSave ? this._filmPopupComponent.getScroll() : 0;
+    const scroll = isPositionSave ? this.filmPopupComponent.getScroll() : 0;
 
     this._previousPopupClose();
     const comments = this._commentsModel.getComments();
-    this._filmPopupComponent = new FilmPopupView(film, comments);
+    this.filmPopupComponent = new FilmPopupView(film, comments);
     changePageOverflow();
 
     document.addEventListener(`keydown`, this._escKeyDownHandler);
-    this._filmPopupComponent.setClickHandler(this._handlePopupClose);
-    this._filmPopupComponent.setWatchlistClickHandler(this._handleWatchlistClick);
-    this._filmPopupComponent.setWatchedClickHandler(this._handleWatchedClick);
-    this._filmPopupComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-    this._filmPopupComponent.setCommentDeleteHandler(this._handleCommentDeletion);
-    this._filmPopupComponent.setCommentAddHandler(this._handleCommentAddition);
-    render(this._popupContainer, RenderPosition.AFTEREND, this._filmPopupComponent);
-    this._filmPopupComponent.applyScroll(scroll);
+    this.filmPopupComponent.setClickHandler(this._handlePopupClose);
+    this.filmPopupComponent.setWatchlistClickHandler(this._handleWatchlistClick);
+    this.filmPopupComponent.setWatchedClickHandler(this._handleWatchedClick);
+    this.filmPopupComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    this.filmPopupComponent.setCommentDeleteHandler(this._handleCommentDeletion);
+    this.filmPopupComponent.setCommentAddHandler(this._handleCommentAddition);
+    render(this._popupContainer, RenderPosition.AFTEREND, this.filmPopupComponent);
+    this.filmPopupComponent.applyScroll(scroll);
   }
 
 
@@ -97,6 +135,9 @@ export default class Film {
   }
 
   handlePopupOpen(film, isPositionSave) {
+    if (isPositionSave && this.filmPopupComponent === null) {
+      return;
+    }
     this._api.getComments(film).then((comments) => {
       this._commentsModel.setComments(comments);
     })
@@ -157,8 +198,7 @@ export default class Film {
     this._filmChange(
         UserAction.ADD_COMMENT,
         UpdateType.PATCH,
-        Object.assign({}, {film: this._film}, {comment: newComment}),
-        true
+        Object.assign({}, {film: this._film}, {comment: newComment})
     );
   }
 }

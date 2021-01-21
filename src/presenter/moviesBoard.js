@@ -7,7 +7,7 @@ import TopRatedListView from "../view/top-rated-films.js";
 import TopCommentedListView from "../view/top-commented-films.js";
 import LoadMoreButtonView from "../view/show-more.js";
 
-import FilmPresenter from "./film.js";
+import FilmPresenter, {State as FilmPresenterViewState} from "./film.js";
 import {RenderPosition, render, removeElement, getContainer} from "../utils/render.js";
 import {getTopCommentedFilms, getTopRatedFilms, sortByRating, sortByDate} from "../utils/films.js";
 import {SortType, UpdateType, UserAction} from "../utils/constants.js";
@@ -27,9 +27,11 @@ export default class moviesBoard {
     this._api = api;
 
     this._renderedFilmsCount = FILMS_COUNT_PER_STEP;
-    this._filmPresenters = {};
-    this._filmRatedPresenters = {};
-    this._filmCommentedPresenters = {};
+    this._presenters = {
+      filmPresenters: {},
+      filmRatedPresenters: {},
+      filmCommentedPresenters: {},
+    };
     this._currentSortType = SortType.DEFAULT;
     this._isLoading = true;
     this._isPopupReopening = false;
@@ -39,7 +41,7 @@ export default class moviesBoard {
     this._noFilmsComponent = new NoFilmsView();
     this._loadingComponent = new LoadingView();
     this._topRatedComponent = new TopRatedListView();
-    this._topCommentedComponent = new TopCommentedListView();
+    this._topCommentedComponent = null;
     this._loadMoreComponent = null;
     this._sortComponent = null;
 
@@ -88,23 +90,50 @@ export default class moviesBoard {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_FILM:
+        this._updatePresentersViewState(update, FilmPresenterViewState.SENDING);
         this._api.updateFilm(update)
           .then((response) => {
+            this._isPopupReopening = true;
             this._filmsModel.updateFilm(updateType, response);
+          })
+          .catch(() => {
+            this._updatePresentersViewState(update, FilmPresenterViewState.SEND_ABORTING);
           });
         break;
+
       case UserAction.ADD_COMMENT:
-        this._api.addComment(update).then((response) => {
-          this._isPopupReopening = true;
-          this._commentsModel.addComment(updateType, response);
-        });
+        this._updatePresentersViewState(update.film, FilmPresenterViewState.SENDING);
+        this._api.addComment(update)
+          .then((response) => {
+            this._isPopupReopening = true;
+            this._commentsModel.addComment(updateType, response);
+          })
+          .catch(() => {
+            this._updatePresentersViewState(update.film, FilmPresenterViewState.SEND_ABORTING);
+          });
         break;
+
       case UserAction.DELETE_COMMENT:
-        this._api.deleteComment(update).then(() => {
-          this._commentsModel.deleteComment(updateType, update);
-        });
+        this._updatePresentersViewState(update.film, FilmPresenterViewState.DELETING);
+        this._api.deleteComment(update)
+          .then(() => {
+            this._isPopupReopening = true;
+            this._commentsModel.deleteComment(updateType, update);
+          })
+          .catch(() => {
+            this._updatePresentersViewState(update.film, FilmPresenterViewState.DELETE_ABORTING);
+          });
         break;
     }
+  }
+
+
+  _updatePresentersViewState(film, state) {
+    Object.values(this._presenters).forEach((presenters) => {
+      if (presenters[film.id] && presenters[film.id].filmPopupComponent !== null) {
+        presenters[film.id].setViewState(state);
+      }
+    });
   }
 
 
@@ -138,28 +167,23 @@ export default class moviesBoard {
   }
 
 
-  _updateFilmCard(film, presenters) {
-    if (presenters[film.id]) {
-      const updatedFilm = presenters[film.id];
-      updatedFilm.init(film);
-
-      if (this._isPopupReopening) {
-        updatedFilm.handlePopupOpen(film, true);
-        this._isPopupReopening = false;
-      }
-    }
-  }
-
   _updateFilm(film) {
-    this._updateFilmCard(film, this._filmPresenters);
-    this._updateFilmCard(film, this._filmRatedPresenters);
-    this._updateFilmCard(film, this._filmCommentedPresenters);
+    Object.values(this._presenters).forEach((presenters) => {
+      if (presenters[film.id]) {
+        presenters[film.id].init(film);
+
+        if (this._isPopupReopening) {
+          presenters[film.id].handlePopupOpen(film, true);
+        }
+      }
+    });
+    this._isPopupReopening = false;
   }
 
 
   _renderFilms(films) {
     const container = getContainer(this._filmsListComponent);
-    films.forEach((film) => this._renderFilm(film, container, this._filmPresenters));
+    films.forEach((film) => this._renderFilm(film, container, this._presenters.filmPresenters));
   }
 
 
@@ -198,11 +222,24 @@ export default class moviesBoard {
 
 
   _renderTopRatedList(films) {
-    this._renderTopList(getTopRatedFilms(films), this._topRatedComponent, this._filmRatedPresenters);
+    this._renderTopList(
+        getTopRatedFilms(films),
+        this._topRatedComponent,
+        this._presenters.filmRatedPresenters
+    );
   }
 
   _renderTopCommentedList(films) {
-    this._renderTopList(getTopCommentedFilms(films), this._topCommentedComponent, this._filmCommentedPresenters);
+    if (this._topCommentedComponent !== null) {
+      removeElement(this._topCommentedComponent);
+    }
+    this._topCommentedComponent = new TopCommentedListView();
+
+    this._renderTopList(
+        getTopCommentedFilms(films),
+        this._topCommentedComponent,
+        this._presenters.filmCommentedPresenters
+    );
   }
 
 
@@ -230,31 +267,22 @@ export default class moviesBoard {
   }
 
 
-  _clearFilmsList(presenters) {
-    Object
+  _handleFilmsListsClear() {
+    Object.values(this._presenters).forEach((presenters) => {
+      Object
       .values(presenters)
       .forEach((presenter) => presenter.destroy());
-    presenters = {};
-  }
-
-
-  _handleFilmsListsClear() {
-    this._clearFilmsList(this._filmPresenters);
-    this._clearFilmsList(this._filmRatedPresenters);
-    this._clearFilmsList(this._filmCommentedPresenters);
+      presenters = {};
+    });
   }
 
 
   _handlePopupChange() {
-    Object
-      .values(this._filmPresenters)
+    Object.values(this._presenters).forEach((presenters) => {
+      Object
+      .values(presenters)
       .forEach((presenter) => presenter.closePopup());
-    Object
-      .values(this._filmRatedPresenters)
-      .forEach((presenter) => presenter.closePopup());
-    Object
-      .values(this._filmCommentedPresenters)
-      .forEach((presenter) => presenter.closePopup());
+    });
   }
 
 
