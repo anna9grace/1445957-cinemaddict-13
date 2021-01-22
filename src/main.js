@@ -65,3 +65,8 @@ const handleMenuClick = (menuItem) => {
 
 navigationComponent.setMenuClickHandler(handleMenuClick);
 statisticsComponent.hide();
+
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`);
+});
+;
