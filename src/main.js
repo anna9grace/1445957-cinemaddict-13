@@ -8,33 +8,39 @@ import FilterBoardPresenter from "./presenter/filter.js";
 import FilmsModel from "./model/films.js";
 import FilterModel from "./model/filters.js";
 import CommentsModel from "./model/comments.js";
-import Api from "./api.js";
+import Api from "./api/api.js";
+import Store from "./api/store.js";
+import Provider from "./api/provider.js";
+
 
 const AUTHORIZATION = `Basic afaifjwio4335l`;
-const END_POINT = `https://13.ecmascript.pages.academy/cinemaddict/`;
+const END_POINT = `https://13.ecmascript.pages.academy/cinemaddict`;
+const STORE_PREFIX = `cinemaddict-localstorage`;
+const STORE_VER = `v13`;
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
+
+const TITLE_ONLINE = `Cinemaddict`;
+const TITLE_OFFLINE = `Cinemaddict [offline]`;
 
 const pageHeaderElement = document.querySelector(`.header`);
 const pageMainElement = document.querySelector(`.main`);
 const statsElement = document.querySelector(`.footer__statistics`);
 const footerElement = document.querySelector(`.footer`);
+const pageTitle = document.querySelector(`.header__logo`);
 
 const api = new Api(END_POINT, AUTHORIZATION);
+const store = new Store(STORE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, store);
+
 
 const filmsModel = new FilmsModel();
 const commentsModel = new CommentsModel();
 const filterModel = new FilterModel();
 
-api.getFilms().then((films) => {
-  filmsModel.setFilms(UpdateType.INIT, films);
-})
-.catch(() => {
-  filmsModel.setFilms(UpdateType.INIT, []);
-});
-
 
 const navigationComponent = new NavigationView();
 
-const moviesBoardPresenter = new MovieBoardPresenter(pageMainElement, footerElement, filmsModel, filterModel, commentsModel, api);
+const moviesBoardPresenter = new MovieBoardPresenter(pageMainElement, footerElement, filmsModel, filterModel, commentsModel, apiWithProvider);
 const filterBoardPresenter = new FilterBoardPresenter(navigationComponent, pageHeaderElement, filmsModel, filterModel);
 
 render(pageMainElement, RenderPosition.BEFOREEND, navigationComponent);
@@ -66,7 +72,30 @@ const handleMenuClick = (menuItem) => {
 navigationComponent.setMenuClickHandler(handleMenuClick);
 statisticsComponent.hide();
 
+
+apiWithProvider.getFilms()
+  .then((films) => {
+    filmsModel.setFilms(UpdateType.INIT, films);
+  })
+  .catch(() => {
+    filmsModel.setFilms(UpdateType.INIT, []);
+  });
+
+
 window.addEventListener(`load`, () => {
   navigator.serviceWorker.register(`/sw.js`);
 });
-;
+
+
+window.addEventListener(`online`, () => {
+  pageTitle.textContent = TITLE_ONLINE;
+
+
+  if (apiWithProvider.isSyncronize) {
+    apiWithProvider.sync();
+  }
+});
+
+window.addEventListener(`offline`, () => {
+  pageTitle.textContent = TITLE_OFFLINE;
+});

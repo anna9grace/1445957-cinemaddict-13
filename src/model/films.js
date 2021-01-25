@@ -102,27 +102,6 @@ export default class Films extends Observer {
         }
     );
 
-    delete film.name;
-    delete film.originalName;
-    delete film.poster;
-    delete film.rating;
-    delete film.director;
-    delete film.writers;
-    delete film.actors;
-    delete film.releaseDate;
-    delete film.duration;
-    delete film.country;
-    delete film.genres;
-    delete film.description;
-    delete film.ageRating;
-    delete film.isInWatchlist;
-    delete film.isWatched;
-    delete film.watchDate;
-    delete film.isFavorite;
-    delete film.commentsId;
-    delete film.newEmoji;
-    delete film.newCommentText;
-
     return adaptedFilm;
   }
 }
