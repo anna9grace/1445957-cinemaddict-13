@@ -1,7 +1,9 @@
 import FilmCardView from "../view/film-card.js";
 import FilmPopupView from "../view/popup.js";
 import {UserAction, UpdateType, FilterType} from "../utils/constants.js";
+import {isOnline} from "../utils/util.js";
 import {RenderPosition, render, removeElement, replace, changePageOverflow} from "../utils/render.js";
+import {toast} from "../utils/toast.js";
 import dayjs from "dayjs";
 
 export const State = {
@@ -187,6 +189,10 @@ export default class Film {
   }
 
   _handleCommentDeletion(commentId) {
+    if (!isOnline()) {
+      toast(`You can't delete comments offline`);
+      return;
+    }
     this._filmChange(
         UserAction.DELETE_COMMENT,
         UpdateType.PATCH,
@@ -195,6 +201,10 @@ export default class Film {
   }
 
   _handleCommentAddition(newComment) {
+    if (!isOnline()) {
+      toast(`You can't add comments offline`);
+      return;
+    }
     this._filmChange(
         UserAction.ADD_COMMENT,
         UpdateType.PATCH,
