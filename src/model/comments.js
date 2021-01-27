@@ -15,13 +15,11 @@ export default class Comments extends Observer {
     return this._comments;
   }
 
-
   addComment(updateType, update) {
     this._comments = update.comments.slice();
 
     this._notify(updateType, update.film);
   }
-
 
   deleteComment(updateType, update) {
     const film = update.film;
@@ -46,7 +44,6 @@ export default class Comments extends Observer {
     this._notify(updateType, film);
   }
 
-
   static adaptToClient(comment) {
     const adaptedComment = Object.assign(
         {},
@@ -63,7 +60,6 @@ export default class Comments extends Observer {
     return adaptedComment;
   }
 
-
   static adaptToServer(comment) {
     const adaptedComment = Object.assign(
         {},
@@ -77,7 +73,6 @@ export default class Comments extends Observer {
 
     delete adaptedComment.text;
     delete adaptedComment.emoji;
-
     return adaptedComment;
   }
 }

@@ -1,5 +1,5 @@
-import {humanizeDuration, humanizeDate} from "../utils/util.js";
 import SmartView from "./smart.js";
+import {humanizeDuration, humanizeDate} from "../utils/util.js";
 import he from "he";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -11,7 +11,7 @@ const renderControlsState = (controlsState) => {
 };
 
 const createGenresListTemplate = (genres) => {
-  let title = genres.length > 1 ? `Genres` : `Genre`;
+  const title = genres.length > 1 ? `Genres` : `Genre`;
   return `<td class="film-details__term">${title}</td>
     <td class="film-details__cell">
       ${genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join(``)}
@@ -204,7 +204,6 @@ export default class FilmPopup extends SmartView {
     this.setCommentAddHandler(this._callback.add);
   }
 
-
   _newEmojiChoseHandler(evt) {
     evt.preventDefault();
     if (evt.target.checked === true) {
@@ -220,17 +219,6 @@ export default class FilmPopup extends SmartView {
       newCommentText: evt.target.value
     }, true);
   }
-
-  _setInnerHandlers() {
-    const emojiChoosers = this.getElement().querySelectorAll(`.film-details__emoji-item`);
-    for (let chooser of emojiChoosers) {
-      chooser.addEventListener(`click`, this._newEmojiChoseHandler);
-    }
-    this.getElement()
-      .querySelector(`.film-details__comment-input`)
-      .addEventListener(`input`, this._commentInputHandler);
-  }
-
 
   _clickHandler(evt) {
     evt.preventDefault();
@@ -248,13 +236,13 @@ export default class FilmPopup extends SmartView {
   _addCommentHandler(evt) {
     if (evt.ctrlKey && evt.key === `Enter`) {
       evt.preventDefault();
-      const emojiField = this.getElement().querySelector(`.film-details__add-emoji-label img`);
-      const textField = this.getElement().querySelector(`.film-details__comment-input`);
+      const emojiFieldElement = this.getElement().querySelector(`.film-details__add-emoji-label img`);
+      const textFieldElement = this.getElement().querySelector(`.film-details__comment-input`);
 
-      if (textField.value && emojiField) {
+      if (textFieldElement.value && emojiFieldElement) {
         const newComment = {
-          text: textField.value,
-          emoji: emojiField.dataset.emotion,
+          text: textFieldElement.value,
+          emoji: emojiFieldElement.dataset.emotion,
           date: humanizeDate(dayjs(), `YYYY/MM/DD HH:mm`)
         };
         this._callback.add(newComment);
@@ -277,6 +265,15 @@ export default class FilmPopup extends SmartView {
     this._callback.clickFavorite();
   }
 
+  _setInnerHandlers() {
+    const emojiChooserElements = this.getElement().querySelectorAll(`.film-details__emoji-item`);
+    for (let chooser of emojiChooserElements) {
+      chooser.addEventListener(`click`, this._newEmojiChoseHandler);
+    }
+    this.getElement()
+      .querySelector(`.film-details__comment-input`)
+      .addEventListener(`input`, this._commentInputHandler);
+  }
 
   setClickHandler(callback) {
     this._callback.clickClose = callback;
@@ -287,9 +284,9 @@ export default class FilmPopup extends SmartView {
 
   setCommentDeleteHandler(callback) {
     this._callback.delete = callback;
-    const deleteButtons = this.getElement().querySelectorAll(`.film-details__comment-delete`);
-    if (deleteButtons) {
-      for (let button of deleteButtons) {
+    const deleteButtonElements = this.getElement().querySelectorAll(`.film-details__comment-delete`);
+    if (deleteButtonElements) {
+      for (let button of deleteButtonElements) {
         button.addEventListener(`click`, this._deleteCommentHandler);
       }
     }

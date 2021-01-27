@@ -7,7 +7,6 @@ const getSyncedFilms = (items) => {
     .map(({payload}) => payload.task);
 };
 
-
 const createStoreStructure = (items) => {
   return items.reduce((acc, current) => {
     return Object.assign({}, acc, {
@@ -25,6 +24,10 @@ export default class Provider {
     this._isSyncronize = false;
   }
 
+  get isSyncronize() {
+    return this._isSyncronize;
+  }
+
   getFilms() {
     if (isOnline()) {
       return this._api.getFilms()
@@ -34,20 +37,16 @@ export default class Provider {
           return films;
         });
     }
-
     const storedFilms = Object.values(this._filmsStore.getItems());
     return Promise.resolve(storedFilms.map(FilmsModel.adaptToClient));
   }
-
 
   getComments(film) {
     if (isOnline()) {
       return this._api.getComments(film);
     }
-
     return Promise.resolve([]);
   }
-
 
   updateFilm(film) {
     if (isOnline()) {
@@ -57,12 +56,10 @@ export default class Provider {
           return updatedFilm;
         });
     }
-
     this._isSyncronize = true;
     this._filmsStore.setItem(film.id, FilmsModel.adaptToServer(Object.assign({}, film)));
     return Promise.resolve(film);
   }
-
 
   addComment(commentUpdate) {
     if (isOnline()) {
@@ -72,10 +69,8 @@ export default class Provider {
           return {film, comments};
         });
     }
-
     return Promise.reject(new Error(`Adding new comment failed`));
   }
-
 
   deleteComment(commentUpdate) {
     if (isOnline()) {
@@ -84,12 +79,6 @@ export default class Provider {
 
     return Promise.reject(new Error(`Comment deletion failed`));
   }
-
-
-  get isSyncronize() {
-    return this._isSyncronize;
-  }
-
 
   sync() {
     if (isOnline()) {
@@ -104,9 +93,7 @@ export default class Provider {
         this._filmsStore.setItems(items);
       });
     }
-
     this._isSyncronize = false;
     return Promise.reject(new Error(`Sync data failed`));
   }
-
 }

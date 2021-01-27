@@ -1,10 +1,10 @@
 import dayjs from "dayjs";
 
 export const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
+  const lowerInteger = Math.ceil(Math.min(a, b));
+  const upperInteger = Math.floor(Math.max(a, b));
 
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
+  return Math.floor(lowerInteger + Math.random() * (upperInteger - lowerInteger + 1));
 };
 
 export const getRandomArrayElement = (arr) => {
@@ -15,7 +15,7 @@ export const getRandomArrayElement = (arr) => {
 export const makeItemsUnique = (items) => [...new Set(items)];
 
 export const humanizeDuration = (duration) => {
-  let durationInHours = duration.get(`hours`) !== 0 ? duration.get(`hours`) + `h ` : ``;
+  const durationInHours = duration.get(`hours`) !== 0 ? duration.get(`hours`) + `h ` : ``;
   return `${durationInHours}${duration.get(`minutes`)}m`;
 };
 

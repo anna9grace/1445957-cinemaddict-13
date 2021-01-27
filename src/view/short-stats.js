@@ -1,5 +1,5 @@
-import {getRandomInteger} from "../utils/util.js";
 import AbstractView from "./abstract.js";
+import {getRandomInteger} from "../utils/util.js";
 
 const createStatisticsTemplate = () => {
   return `<p>${getRandomInteger(10000, 1000000)} movies inside</p>`;

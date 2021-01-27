@@ -1,5 +1,5 @@
-import {humanizeDuration, humanizeDate} from "../utils/util.js";
 import AbstractView from "./abstract.js";
+import {humanizeDuration, humanizeDate} from "../utils/util.js";
 
 const MAX_DESCRIPTION_LENGTH = 140;
 
@@ -72,7 +72,7 @@ export default class Film extends AbstractView {
   setClickHandler(callback) {
     this._callback.click = callback;
 
-    let clickElements = this.getElement()
+    const clickElements = this.getElement()
       .querySelectorAll(`.film-card__poster, .film-card__title, .film-card__comments`);
 
     for (let element of clickElements) {

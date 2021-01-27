@@ -18,13 +18,13 @@ const createFilterTemplate = (filter, currentFilterType) => {
   );
 };
 
-
 export const createFiltersTemplate = (filters, currentFilterType) => {
   const filtersListTemplate = filters.map((filter) => createFilterTemplate(filter, currentFilterType)).join(``);
   return `<div class="main-navigation__items">
       ${filtersListTemplate}
     </div>`;
 };
+
 
 export default class Filters extends AbstractView {
   constructor(filters, currentFilterType) {
@@ -34,11 +34,9 @@ export default class Filters extends AbstractView {
     this._filterChangeHandler = this._filterChangeHandler.bind(this);
   }
 
-
   getTemplate() {
     return createFiltersTemplate(this._filters, this._currentFilterType);
   }
-
 
   _filterChangeHandler(evt) {
     if (evt.target.tagName !== `A`) {

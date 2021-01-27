@@ -20,6 +20,7 @@ export default class Films extends Observer {
   }
 
   updateFilm(updateType, update) {
+
     const index = this._films.findIndex((film) => film.id === update.id);
     if (index === -1) {
       throw new Error(`Can't update unexisting task`);
@@ -61,14 +62,11 @@ export default class Films extends Observer {
           newCommentText: ``,
         }
     );
-
     delete adaptedFilm.comments;
     delete adaptedFilm.film_info;
     delete adaptedFilm.user_details;
-
     return adaptedFilm;
   }
-
 
   static adaptToServer(film) {
     const adaptedFilm = Object.assign(
@@ -101,7 +99,6 @@ export default class Films extends Observer {
           }
         }
     );
-
     return adaptedFilm;
   }
 }

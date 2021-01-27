@@ -26,7 +26,6 @@ export default class Abstract {
     this._element = null;
   }
 
-
   show() {
     this.getElement().style.display = ``;
   }

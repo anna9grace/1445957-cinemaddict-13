@@ -53,16 +53,13 @@ export const replace = (newElement, oldElement) => {
   parent.replaceChild(newElement, oldElement);
 };
 
-
 export const removeElement = (component) => {
   if (!(component instanceof Abstract)) {
     throw new Error(`Can remove only components`);
   }
-
   component.getElement().remove();
   component.removeElement();
 };
-
 
 export const getContainer = (element) => {
   return element.getElement().querySelector(`.films-list__container`);
