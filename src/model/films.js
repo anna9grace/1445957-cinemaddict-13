@@ -61,14 +61,11 @@ export default class Films extends Observer {
           newCommentText: ``,
         }
     );
-
     delete adaptedFilm.comments;
     delete adaptedFilm.film_info;
     delete adaptedFilm.user_details;
-
     return adaptedFilm;
   }
-
 
   static adaptToServer(film) {
     const adaptedFilm = Object.assign(
@@ -101,7 +98,6 @@ export default class Films extends Observer {
           }
         }
     );
-
     return adaptedFilm;
   }
 }

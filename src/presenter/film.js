@@ -57,7 +57,6 @@ export default class Film {
       return;
     }
     replace(this._filmComponent, previousFilmComponent);
-
     removeElement(previousFilmComponent);
   }
 
@@ -108,7 +107,6 @@ export default class Film {
     }
   }
 
-
   _renderPopup(film, isPositionSave) {
     const scroll = isPositionSave ? this.filmPopupComponent.getScroll() : 0;
 
@@ -127,7 +125,6 @@ export default class Film {
     render(this._popupContainer, RenderPosition.AFTEREND, this.filmPopupComponent);
     this.filmPopupComponent.applyScroll(scroll);
   }
-
 
   _escKeyDownHandler(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {

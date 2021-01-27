@@ -13,6 +13,7 @@ const SuccessHTTPStatusRange = {
   MAX: 299
 };
 
+
 export default class Api {
   constructor(endPoint, authorization) {
     this._endPoint = endPoint;
@@ -24,7 +25,6 @@ export default class Api {
         .then(Api.toJSON)
         .then((films) => films.map(FilmsModel.adaptToClient));
   }
-
 
   getComments(film) {
     return this._load({url: `comments/${film.id}`})
@@ -60,14 +60,12 @@ export default class Api {
       });
   }
 
-
   deleteComment(commentUpdate) {
     return this._load({
       url: `comments/${commentUpdate.comment}`,
       method: Method.DELETE
     });
   }
-
 
   sync(data) {
     return this._load({
@@ -78,7 +76,6 @@ export default class Api {
     })
       .then(Api.toJSON);
   }
-
 
   _load({
     url,
@@ -104,10 +101,8 @@ export default class Api {
     ) {
       throw new Error(`${response.status}: ${response.statusText}`);
     }
-
     return response;
   }
-
 
   static toJSON(response) {
     return response.json();

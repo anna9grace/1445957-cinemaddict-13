@@ -4,6 +4,7 @@ import {RenderPosition, render, removeElement, replace} from "../utils/render.js
 import {filter} from "../utils/filter.js";
 import {FilterType, UpdateType} from "../utils/constants.js";
 
+
 export default class Filter {
   constructor(filterContainer, profileContainer, filmsModel, filterModel) {
     this._filterContainer = filterContainer;
@@ -22,6 +23,7 @@ export default class Filter {
     this._filterModel.addObserver(this._handleModelEvent);
   }
 
+
   init() {
     this._currentFilter = this._filterModel.getFilter();
 
@@ -30,14 +32,12 @@ export default class Filter {
 
     this._filterComponent = new FilterView(filters, this._currentFilter);
     this._filterComponent.setFilterChangeHandler(this._handleFilterChange);
-
     this._renderProfileStatus();
 
     if (prevFilterComponent === null) {
       render(this._filterContainer, RenderPosition.AFTERBEGIN, this._filterComponent);
       return;
     }
-
     replace(this._filterComponent, prevFilterComponent);
     removeElement(prevFilterComponent);
   }
@@ -46,11 +46,9 @@ export default class Filter {
     this._currentFilter = null;
   }
 
-
   _handleModelEvent() {
     this.init();
   }
-
 
   _handleFilterChange(filterType) {
     if (this._currentFilter === filterType) {
@@ -58,7 +56,6 @@ export default class Filter {
     }
     this._filterModel.setFilter(UpdateType.MAJOR, filterType);
   }
-
 
   _renderProfileStatus() {
     const prevProfileComponent = this._profileComponent;
@@ -72,7 +69,6 @@ export default class Filter {
     replace(this._profileComponent, prevProfileComponent);
     removeElement(prevProfileComponent);
   }
-
 
   _getFilters() {
     const films = this._filmsModel.getFilms();

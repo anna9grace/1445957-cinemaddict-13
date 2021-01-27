@@ -78,14 +78,12 @@ const renderChart = (statisticCtx, watchedFilms, dateFrom, dateTo) => {
   });
 };
 
-
 const createTotalDurationTemplate = (watchedFilms) => {
   const totalTime = getTotalWatchingTime(watchedFilms);
   const hours = !totalTime ? `` : `${totalTime.get(`hours`)} <span class="statistic__item-description">h</span>`;
 
   return !totalTime ? `0 ` : `${hours}${totalTime.get(`minutes`)} `;
 };
-
 
 const createTopGenreTemplate = (watchedFilms) => {
   const watchedGenres = [];
@@ -100,7 +98,6 @@ const createTopGenreTemplate = (watchedFilms) => {
     <p class="statistic__item-text">${uniqueGenres[0]}</p>
   </li>`;
 };
-
 
 const createStatisticsTemplate = (data, currentPeriod) => {
   const {watchedFilms, dateFrom, dateTo} = data;
@@ -149,8 +146,8 @@ const createStatisticsTemplate = (data, currentPeriod) => {
         </ul>
       <div class="statistic__chart-wrap">
         <canvas class="statistic__chart" width="1000"></canvas>
-      </div>   
-        
+      </div>
+
     </section>`;
 };
 
@@ -209,21 +206,21 @@ export default class Statistics extends SmartView {
     }
   }
 
-  _setInnerHandlers() {
-    const periodChooser = this.getElement().querySelectorAll(`.statistic__filters-input`);
-    for (let chooser of periodChooser) {
-      chooser.addEventListener(`change`, this._periodChangeHandler);
-    }
-  }
-
   _setCharts() {
     if (this._genresChart !== null) {
       this._genresChart = null;
     }
 
     const {watchedFilms, dateFrom, dateTo} = this._data;
-    const statisticCtx = this.getElement().querySelector(`.statistic__chart`);
+    const statisticCtxElement = this.getElement().querySelector(`.statistic__chart`);
 
-    this._genresChart = renderChart(statisticCtx, watchedFilms, dateFrom, dateTo);
+    this._genresChart = renderChart(statisticCtxElement, watchedFilms, dateFrom, dateTo);
+  }
+
+  _setInnerHandlers() {
+    const periodChooserELements = this.getElement().querySelectorAll(`.statistic__filters-input`);
+    for (let chooser of periodChooserELements) {
+      chooser.addEventListener(`change`, this._periodChangeHandler);
+    }
   }
 }

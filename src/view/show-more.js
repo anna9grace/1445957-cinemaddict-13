@@ -4,11 +4,13 @@ const createShowMoreTemplate = () => {
   return `<button class="films-list__show-more">Show more</button>`;
 };
 
+
 export default class LoadMoreButton extends AbstractView {
   constructor() {
     super();
     this._clickHandler = this._clickHandler.bind(this);
   }
+
   getTemplate() {
     return createShowMoreTemplate();
   }

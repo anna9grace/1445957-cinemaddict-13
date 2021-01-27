@@ -11,6 +11,7 @@ const createUserProfileTemplate = (films) => {
     </section>`;
 };
 
+
 export default class UserProfile extends Abstract {
   constructor(films) {
     super();
