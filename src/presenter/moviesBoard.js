@@ -34,6 +34,8 @@ export default class MoviesBoard {
     this._currentSortType = SortType.DEFAULT;
     this._isLoading = true;
     this._isPopupReopening = false;
+    this._isTopCommentedChanged = false;
+    this._topCommentedFilms = null;
 
     this._filmsBlockComponent = new FilmsBlockView();
     this._filmsListComponent = new FilmsListView();
@@ -103,6 +105,10 @@ export default class MoviesBoard {
         this._updatePresentersViewState(update.film, FilmPresenterViewState.SENDING);
         this._api.addComment(update)
           .then((response) => {
+            const commentsMinTopCount = this._topCommentedFilms[TOP_FILMS_COUNT - 1].commentsId.length;
+            if (response.film.commentsId.length > commentsMinTopCount) {
+              this._isTopCommentedChanged = true;
+            }
             this._isPopupReopening = true;
             this._commentsModel.addComment(updateType, response);
           })
@@ -115,6 +121,9 @@ export default class MoviesBoard {
         this._updatePresentersViewState(update.film, FilmPresenterViewState.DELETING);
         this._api.deleteComment(update)
           .then(() => {
+            if (this._presenters.filmCommentedPresenters[update.film.id]) {
+              this._isTopCommentedChanged = true;
+            }
             this._isPopupReopening = true;
             this._commentsModel.deleteComment(updateType, update);
           })
@@ -166,12 +175,18 @@ export default class MoviesBoard {
       if (presenters[film.id]) {
         presenters[film.id].init(film);
 
-        if (this._isPopupReopening) {
+        if (this._isPopupReopening && presenters[film.id]) {
           presenters[film.id].handlePopupOpen(film, true);
+          this._isPopupReopening = false;
         }
       }
     });
-    this._isPopupReopening = false;
+    if (this._isTopCommentedChanged === true) {
+      this._api.getFilms().then((films) => {
+        this._renderTopCommentedList(films);
+        this._isTopCommentedChanged = false;
+      });
+    }
   }
 
   _renderFilms(films) {
@@ -220,11 +235,12 @@ export default class MoviesBoard {
   _renderTopCommentedList(films) {
     if (this._topCommentedComponent !== null) {
       removeElement(this._topCommentedComponent);
+      this._clearFilmsList(this._presenters.filmCommentedPresenters);
     }
     this._topCommentedComponent = new TopCommentedListView();
-
+    this._topCommentedFilms = getTopCommentedFilms(films);
     this._renderTopList(
-        getTopCommentedFilms(films),
+        this._topCommentedFilms,
         this._topCommentedComponent,
         this._presenters.filmCommentedPresenters
     );
@@ -252,12 +268,16 @@ export default class MoviesBoard {
     render(this._filmsListComponent, RenderPosition.BEFOREEND, this._loadMoreComponent);
   }
 
+  _clearFilmsList(presenters) {
+    Object
+    .values(presenters)
+    .forEach((presenter) => presenter.destroy());
+    presenters = {};
+  }
+
   _handleFilmsListsClear() {
     Object.values(this._presenters).forEach((presenters) => {
-      Object
-      .values(presenters)
-      .forEach((presenter) => presenter.destroy());
-      presenters = {};
+      this._clearFilmsList(presenters);
     });
   }
 
