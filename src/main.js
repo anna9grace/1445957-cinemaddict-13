@@ -1,8 +1,8 @@
 import NavigationView from "./view/navigation.js";
-import FooterStatsView from "./view/short-stats.js";
+import FooterStatsView from "./view/footer-stats.js";
 import StatisticsView from "./view/statistics.js";
-import MovieBoardPresenter from "./presenter/moviesBoard.js";
-import FilterBoardPresenter from "./presenter/filter.js";
+import MovieBoardPresenter from "./presenter/movies-board.js";
+import FilterPresenter from "./presenter/filter.js";
 import FilmsModel from "./model/films.js";
 import FilterModel from "./model/filters.js";
 import CommentsModel from "./model/comments.js";
@@ -26,9 +26,9 @@ const PageTitles = {
 
 const pageHeaderElement = document.querySelector(`.header`);
 const pageMainElement = document.querySelector(`.main`);
-const statsElement = document.querySelector(`.footer__statistics`);
 const footerElement = document.querySelector(`.footer`);
-const pageTitleElement = document.querySelector(`.header__logo`);
+const statsElement = footerElement.querySelector(`.footer__statistics`);
+const pageTitleElement = pageHeaderElement.querySelector(`.header__logo`);
 
 const api = new Api(END_POINT, AUTHORIZATION);
 const store = new Store(STORE_NAME, window.localStorage);
@@ -42,7 +42,7 @@ const navigationComponent = new NavigationView();
 const statisticsComponent = new StatisticsView();
 
 const moviesBoardPresenter = new MovieBoardPresenter(pageMainElement, footerElement, filmsModel, filterModel, commentsModel, apiWithProvider);
-const filterBoardPresenter = new FilterBoardPresenter(navigationComponent, pageHeaderElement, filmsModel, filterModel);
+const filterPresenter = new FilterPresenter(navigationComponent, pageHeaderElement, filmsModel, filterModel);
 
 const handleMenuClick = (menuItem) => {
   switch (menuItem) {
@@ -52,7 +52,7 @@ const handleMenuClick = (menuItem) => {
       break;
     case MenuItem.STATISTICS:
       moviesBoardPresenter.hideFilmsBoard();
-      filterBoardPresenter.resetFilter();
+      filterPresenter.resetFilter();
       statisticsComponent.show();
       statisticsComponent.setWatchedFilms(filmsModel.getFilms());
       break;
@@ -60,7 +60,7 @@ const handleMenuClick = (menuItem) => {
 };
 
 render(pageMainElement, RenderPosition.BEFOREEND, navigationComponent);
-filterBoardPresenter.init();
+filterPresenter.init();
 moviesBoardPresenter.init();
 render(pageMainElement, RenderPosition.BEFOREEND, statisticsComponent);
 render(statsElement, RenderPosition.BEFOREEND, new FooterStatsView());

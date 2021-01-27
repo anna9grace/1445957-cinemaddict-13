@@ -1,5 +1,5 @@
 import FilmCardView from "../view/film-card.js";
-import FilmPopupView from "../view/popup.js";
+import FilmPopupView from "../view/film-popup.js";
 import {UserAction, UpdateType, FilterType} from "../utils/constants.js";
 import {isOnline} from "../utils/util.js";
 import {RenderPosition, render, removeElement, replace, changePageOverflow} from "../utils/render.js";

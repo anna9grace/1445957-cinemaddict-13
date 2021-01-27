@@ -37,7 +37,7 @@ export default class Navigation extends AbstractView {
       target.classList.add(`main-navigation__additional--active`);
       return;
     }
-    if (activeAdditionalItemElement) {
+    if (target.dataset.menuItem !== MenuItem.STATISTICS && activeAdditionalItemElement) {
       activeAdditionalItemElement.classList.remove(`main-navigation__additional--active`);
     }
   }

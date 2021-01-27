@@ -1,4 +1,4 @@
-import Abstract from "./abstract.js";
+import AbstractView from "./abstract.js";
 import {getProfileRank} from "../utils/statistics.js";
 
 
@@ -12,7 +12,7 @@ const createUserProfileTemplate = (films) => {
 };
 
 
-export default class UserProfile extends Abstract {
+export default class UserProfile extends AbstractView {
   constructor(films) {
     super();
     this._films = films;
