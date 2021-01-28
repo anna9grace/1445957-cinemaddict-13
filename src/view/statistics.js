@@ -219,7 +219,7 @@ export default class Statistics extends SmartView {
 
   _setInnerHandlers() {
     const periodChooserELements = this.getElement().querySelectorAll(`.statistic__filters-input`);
-    for (let chooser of periodChooserELements) {
+    for (const chooser of periodChooserELements) {
       chooser.addEventListener(`change`, this._periodChangeHandler);
     }
   }

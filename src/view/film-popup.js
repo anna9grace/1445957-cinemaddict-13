@@ -267,7 +267,7 @@ export default class FilmPopup extends SmartView {
 
   _setInnerHandlers() {
     const emojiChooserElements = this.getElement().querySelectorAll(`.film-details__emoji-item`);
-    for (let chooser of emojiChooserElements) {
+    for (const chooser of emojiChooserElements) {
       chooser.addEventListener(`click`, this._newEmojiChoseHandler);
     }
     this.getElement()
@@ -286,7 +286,7 @@ export default class FilmPopup extends SmartView {
     this._callback.delete = callback;
     const deleteButtonElements = this.getElement().querySelectorAll(`.film-details__comment-delete`);
     if (deleteButtonElements) {
-      for (let button of deleteButtonElements) {
+      for (const button of deleteButtonElements) {
         button.addEventListener(`click`, this._deleteCommentHandler);
       }
     }
